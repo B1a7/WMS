@@ -1,24 +1,54 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
+using System.Text;
+using WMS;
 using WMS.Middleware;
 using WMS.Models;
+using WMS.Models.Dtos;
 using WMS.Models.Entities;
+using WMS.Models.Validators;
 using WMS.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var authenticationSetttings = new AuthenticationSettings();
+builder.Configuration.GetSection("Authentication").Bind(authenticationSetttings);
+builder.Services.AddSingleton(authenticationSetttings);
+builder.Services.AddAuthentication(option =>
+{
+    option.DefaultAuthenticateScheme = "Bearer";
+    option.DefaultScheme = "Bearer";
+    option.DefaultChallengeScheme = "Bearer";
+}).AddJwtBearer(cfg =>
+{
+    cfg.RequireHttpsMetadata = false;
+    cfg.SaveToken = true;
+    cfg.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidIssuer = authenticationSetttings.JwtIssuer,
+        ValidAudience = authenticationSetttings.JwtIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSetttings.JwtKey)),
+    };
+});
+
 builder.Logging.ClearProviders();
 builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
 builder.Host.UseNLog();
+builder.Services.AddControllers().AddFluentValidation(); ;
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<RequestTimeMiddleware>();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
 builder.Services.AddDbContext<WMSDbContext>();
 builder.Services.AddScoped<Seeder>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,6 +65,7 @@ generator.GenerateData();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseMiddleware<RequestTimeMiddleware>();
+app.UseAuthentication();
 app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI(c =>

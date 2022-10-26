@@ -21,5 +21,12 @@ namespace WMS.Controllers
             return Ok();
         }
 
+        [HttpPost("login")]
+        public ActionResult Login([FromBody]LoginDto dto)
+        {
+            string token = _accountService.GenerateJwt(dto);
+            return Ok(token);
+        }
     }
+
 }
