@@ -80,5 +80,6 @@ namespace WMS.Services
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
+        }
     }
 }
