@@ -13,10 +13,12 @@ namespace WMS.Controllers
     {
         private readonly IProductService _productService;
 
+
         public ProductController(IProductService productService)
         {
             productService = _productService;
         }
+
 
         [HttpPost]
         public ActionResult AddProduct([FromBody] AddProductDto dto)
