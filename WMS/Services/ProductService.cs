@@ -1,10 +1,11 @@
 ﻿using WMS.Models;
+using WMS.Models.Dtos;
 
 namespace WMS.Services
 {
     public interface IProductService
     {
-        void someMethod();
+        int AddProduct(AddProductDto dto);
     }
 
     public class ProductService : IProductService
@@ -16,9 +17,9 @@ namespace WMS.Services
         {
             _dbContext = dbContext;
         }
-        public void someMethod()
+        public int AddProduct(AddProductDto dto)
         {
-
+            return 0;
         }
     }
 }
