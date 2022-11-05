@@ -7,7 +7,7 @@ namespace WMS.Controllers
     [Route("api/account")]
     [ApiController]
     public class AccountController : ControllerBase
-    {
+    { 
         private IAccountService _accountService;
 
         public AccountController(IAccountService accountService)
