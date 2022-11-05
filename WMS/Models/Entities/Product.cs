@@ -6,6 +6,9 @@
         public string Name { get; set; }
         public int Quantity { get; set; }
         public DateTime ProductionDate { get; set; }
+        // waga 
+        // wymiar 
+        // data ważności 
 
         public virtual List<Category> Category { get; set; }
         public virtual List<Status> Status { get; set; }
