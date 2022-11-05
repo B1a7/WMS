@@ -8,6 +8,7 @@ namespace WMS.Models.Validators
         private int[] pageSizes = new[] { 5, 10, 15, 30 }; 
         public ProductQueryValidatior()
         {
+            
             RuleFor(r => r.PageNumber).GreaterThanOrEqualTo(1);
             RuleFor(r => r.PageSize).Custom((value, context) =>
             {

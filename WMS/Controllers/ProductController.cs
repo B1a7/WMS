@@ -17,7 +17,7 @@ namespace WMS.Controllers
 
         public ProductController(IProductService productService)
         {
-            productService = _productService;
+            _productService = productService;
         }
 
 
@@ -45,7 +45,7 @@ namespace WMS.Controllers
             return Ok(product);
         }
 
-        //[HttpGet("{id}")]
+        //[HttpGet("{product/id}")]
         //public ActionResult<Product> GetFullDetailsById([FromRoute] int id)
         //{
         //    var product = _productService.GetFullDetailsById(id);
