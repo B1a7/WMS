@@ -7,6 +7,6 @@
         public string Street { get; set; }
         public string PostalCode { get; set; }
 
-        public virtual Client Client { get; set; }
+
     }
 }

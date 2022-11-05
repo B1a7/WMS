@@ -10,11 +10,15 @@
         public string Size { get; set; }
 
 
-        public virtual List<Category> Category { get; set; }
-        public virtual List<Status> Status { get; set; }
-        public int ClientId { get; set; }
-        public virtual Client Client { get; set; }
+        public virtual List<ProductCategory> ProductCategories { get; set; }
 
+        public virtual List<ProductStatus> ProductStatuses { get; set; }
+
+        public int SupplierId { get; set; }
+        public virtual Supplier Supplier { get; set; }
+
+        //public int RecipientId { get; set; }
+        //public virtual Recipient Recipient { get; set; }
 
     }
 }

@@ -4,8 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        //kod hs cpv
-        public int ProductId { get; set; }
-        public virtual Product Product { get; set; }
+        public string HSCode { get; set; }
+
     }
 }

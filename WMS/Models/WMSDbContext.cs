@@ -8,6 +8,7 @@ namespace WMS.Models
         //TODO: set connection string in app.config
         private string _conectionString = "Server=(localdb)\\localdb;Database=WMSDb;Trusted_Connection=True;";
 
+        public DbSet<Address> Addresses { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Recipient> Recipients { get; set; }
@@ -19,28 +20,8 @@ namespace WMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Category>()
-                .Property(c => c.Name)
-                .IsRequired();
-
-            modelBuilder.Entity<Client>()
-                .Property(c => c.Name)
-                .IsRequired();
-
-            modelBuilder.Entity<Product>()
-                .Property(p => p.Name)
-                .IsRequired();
-
-            modelBuilder.Entity<User>()
-                .Property(u => u.Email)
-                .IsRequired();
-
-            modelBuilder.Entity<Role>()
-                .Property(r => r.Name)
-                .IsRequired();
-
-
-        }
+            base.OnModelCreating(modelBuilder);
+        }   
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
