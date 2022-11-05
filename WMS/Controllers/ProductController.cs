@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WMS.Models;
 using WMS.Models.Dtos;
+using WMS.Models.Entities;
 using WMS.Services;
 
 namespace WMS.Controllers
@@ -40,6 +41,14 @@ namespace WMS.Controllers
         public ActionResult<ProductDto> GetById([FromRoute] int id)
         {
             var product = _productService.GetById(id);
+
+            return Ok(product);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<Product> GetFullDetailsById([FromRoute] int id)
+        {
+            var product = _productService.GetFullDetailsById(id);
 
             return Ok(product);
         }
