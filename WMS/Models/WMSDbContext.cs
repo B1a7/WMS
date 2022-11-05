@@ -9,7 +9,8 @@ namespace WMS.Models
         private string _conectionString = "Server=(localdb)\\localdb;Database=WMSDb;Trusted_Connection=True;";
 
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Client> Clients { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Recipient> Recipients { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Status> Statuses { get; set; }
         public DbSet<User> Users { get; set; }
