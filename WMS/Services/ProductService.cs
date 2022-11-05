@@ -1,5 +1,6 @@
 ﻿using WMS.Models;
 using WMS.Models.Dtos;
+using WMS.Models.Entities;
 
 namespace WMS.Services
 {
@@ -10,6 +11,7 @@ namespace WMS.Services
         void Delete(int id);
         void Update(int id, UpdateProductDto dto);
         PagedResult<ProductDto> GetAll(ProductQuery query);
+        Product GetFullDetailsById(int id);
     }
 
     public class ProductService : IProductService
@@ -50,7 +52,10 @@ namespace WMS.Services
             return null;
         }
 
-
+        public Product GetFullDetailsById(int id)
+        {
+            return null;
+        }
 
     }
 }

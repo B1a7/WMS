@@ -1,11 +1,12 @@
-﻿using WMS.Models.Entities;
+﻿using Bogus;
+using WMS.Models.Entities;
 
 namespace WMS.Models
 {
     public class Seeder
     {
         private readonly WMSDbContext _dbContext;
-
+        
         public Seeder(WMSDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -22,7 +23,53 @@ namespace WMS.Models
                     _dbContext.SaveChanges();
                 }
 
+
+                //if (!_dbContext.Statuses.Any())
+                //{
+                //    var statuses = GetStatuses();
+                //    _dbContext.Statuses.AddRange(statuses);
+                //    _dbContext.SaveChanges();
+                //}
             }
+
+
+            var addressGenerator = new Faker<Address>()
+                .RuleFor(a => a.City, f => f.Address.City())
+                .RuleFor(a => a.Street, f => f.Address.StreetName())
+                .RuleFor(a => a.PostalCode, f => f.Address.ZipCode())
+                .RuleFor(a => a.Country, f => f.Address.Country());
+
+
+            var categoryGenerator = new Faker<Category>()
+                .RuleFor(c => c.Name, f => f.Commerce.Color())
+                .RuleFor(c => c.HSCode, f =>f.Commerce.Ean8());
+
+
+            var statuses = new[] { "Delivered", "Placed in stock", "Sent" };
+            var statusGenerator = new Faker<Status>()
+                .RuleFor(s => s.PackageStatus, f => f.PickRandom(statuses));
+
+            var sizes = new[] { "Small", "Medium", "Large" };
+            var productGenerator = new Faker<Product>()
+                .RuleFor(p => p.Name, f => f.Commerce.ProductName())
+                .RuleFor(p => p.Quantity, f => f.PickRandom(1, 10))
+                .RuleFor(p => p.IsAvaiable, f => f.Random.Bool())
+                .RuleFor(p => p.ProductionDate, f => DateTime.Now)
+                .RuleFor(p => p.Size, f => f.PickRandom(sizes))
+                .RuleFor(p => p.Position, f => f.Random.Double(1, 9.9).ToString())
+                .RuleFor(p => p.Categories, f => categoryGenerator.Generate(5))
+                .RuleFor(p => p.Statuses, f => statusGenerator.Generate(2));
+
+            var supplierGenerator = new Faker<Supplier>()
+                .RuleFor(s => s.Name, f => f.Name.FullName())
+                .RuleFor(s => s.Email, f => f.Internet.Email())
+                .RuleFor(s => s.PhoneNumber, f => f.Phone.PhoneNumber())
+                .RuleFor(s => s.Address, f => addressGenerator.Generate())
+                .RuleFor(s => s.Products, f => productGenerator.Generate(20));
+
+            var supplier = supplierGenerator.Generate(20);
+            _dbContext.AddRange(supplier);
+            _dbContext.SaveChanges();
         }
 
         private IEnumerable<Role> GetRoles()
@@ -30,19 +77,28 @@ namespace WMS.Models
             var roles = new List<Role>()
             {
                 new Role()
-                {
-                    Name = "User"
-                },
+                { Name = "User" },
                 new Role()
-                {
-                    Name = "Manager"
-                },
-                new Role()
-                {
-                    Name = "Admin"
-                }
+                { Name = "Manager" },
+                new Role() 
+                { Name = "Admin" }
             };
             return roles;
         }
+
+        private IEnumerable<Status> GetStatuses()
+        {
+            var statuses = new List<Status>()
+            {
+                new Status()
+                { PackageStatus = "Delivered" },
+                new Status()
+                { PackageStatus = "Placed in stock" },
+                new Status()
+                { PackageStatus = "Sent" }
+            };
+            return statuses;
+        }
+
     }
 }

@@ -8,7 +8,7 @@ namespace WMS.Models.Dtos
         public int Quantity { get; set; }
         public int IsAvaiable { get; set; }
 
-        public virtual List<ProductStatus> ProductStatuses { get; set; }
+        public virtual List<Status> Statuses { get; set; }
 
     }
 }

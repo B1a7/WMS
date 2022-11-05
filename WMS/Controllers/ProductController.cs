@@ -45,13 +45,13 @@ namespace WMS.Controllers
             return Ok(product);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<Product> GetFullDetailsById([FromRoute] int id)
-        {
-            var product = _productService.GetFullDetailsById(id);
+        //[HttpGet("{id}")]
+        //public ActionResult<Product> GetFullDetailsById([FromRoute] int id)
+        //{
+        //    var product = _productService.GetFullDetailsById(id);
 
-            return Ok(product);
-        }
+        //    return Ok(product);
+        //}
 
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] UpdateProductDto dto, [FromRoute]int id)
