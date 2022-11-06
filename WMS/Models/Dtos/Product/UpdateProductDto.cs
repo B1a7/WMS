@@ -1,6 +1,6 @@
 ﻿using WMS.Models.Entities;
 
-namespace WMS.Models.Dtos
+namespace WMS.Models.Dtos.Product
 {
     public class UpdateProductDto
     {

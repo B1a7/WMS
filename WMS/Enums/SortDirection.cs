@@ -1,4 +1,4 @@
-﻿namespace WMS.Models
+﻿namespace WMS.Enums
 {
     public enum SortDirection
     {

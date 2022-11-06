@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using WMS.Models.Dtos;
+using WMS.Models.Dtos.Product;
 
 namespace WMS.Models.Validators
 {

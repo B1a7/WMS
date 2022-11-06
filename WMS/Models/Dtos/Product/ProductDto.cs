@@ -1,4 +1,4 @@
-﻿namespace WMS.Models.Dtos
+﻿namespace WMS.Models.Dtos.Product
 {
     public class ProductDto
     {
@@ -7,7 +7,7 @@
         public DateTime ProductionDate { get; set; }
         public bool IsAvaiable { get; set; }
 
-        public string SupplierName { get; set; }   
+        public string SupplierName { get; set; }
         public DateTime DateStatus { get; set; }
         public string PackageStatus { get; set; }
 

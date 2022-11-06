@@ -1,6 +1,8 @@
-﻿namespace WMS.Models.Dtos
+﻿using WMS.Enums;
+
+namespace WMS.Models.Dtos
 {
-    public class ProductQuery
+    public class QueryBase
     {
         public string? SearchPhrase { get; set; }
         public int PageNumber { get; set; }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Models;
-using WMS.Models.Dtos;
+using WMS.Models.Dtos.Product;
 using WMS.Models.Entities;
 using WMS.Services;
 
@@ -12,7 +12,7 @@ namespace WMS.Controllers
 
     public class ProductController : ControllerBase
     {
-        private readonly IProductService _productService;
+        private IProductService _productService;
 
 
         public ProductController(IProductService productService)

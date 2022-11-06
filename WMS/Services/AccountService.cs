@@ -7,7 +7,7 @@ using System.Text;
 using WMS.Exceptions;
 using WMS.Middleware;
 using WMS.Models;
-using WMS.Models.Dtos;
+using WMS.Models.Dtos.Account;
 using WMS.Models.Entities;
 
 namespace WMS.Services

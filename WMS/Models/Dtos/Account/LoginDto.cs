@@ -1,4 +1,4 @@
-﻿ namespace WMS.Models.Dtos
+﻿namespace WMS.Models.Dtos.Account
 {
     public class LoginDto
     {

@@ -5,6 +5,7 @@ using WMS.Enums;
 using WMS.Exceptions;
 using WMS.Models;
 using WMS.Models.Dtos;
+using WMS.Models.Dtos.Product;
 using WMS.Models.Entities;
 
 namespace WMS.Services

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using WMS.Models.Dtos;
+using WMS.Models.Dtos.Customer;
+using WMS.Models.Dtos.Product;
 using WMS.Models.Entities;
 
 namespace WMS
@@ -29,7 +30,7 @@ namespace WMS
                 .ForMember(m => m.Statuses, c => c.MapFrom(dto => new List<Status>(){ 
                     new Status() { PackageStatus = dto.Status, IsActive = dto.IsActive, DateStatus = dto.StatusRegistrationDate }}));
 
-
+            CreateMap<Supplier, SupplierDto>();
 
         }
     }

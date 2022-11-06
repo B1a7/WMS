@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using WMS.Enums;
 
-namespace WMS.Models.Dtos
+namespace WMS.Models.Dtos.Product
 {
     public class AddProductDto
     {
