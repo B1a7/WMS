@@ -1,4 +1,4 @@
-﻿namespace WMS.Middleware
+﻿namespace WMS.Exceptions
 {
     public class BadRequestException : Exception
     {

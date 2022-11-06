@@ -1,34 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WMS.Enums;
 
 namespace WMS.Models.Dtos
 {
     public class AddProductDto
     {
-
-        [Required]
-        [MaxLength(25)]
         public string Name { get; set; }
-        [Required]
         public int Quantity { get; set; }
         public DateTime ProductionDate { get; set; }
-        public string Category { get; set; }
-        [Required]
-        public string ClientName { get; set; }
-        [Required]
-        [EmailAddress]
-        public string ClientEmail { get; set; }
-        [Phone]
-        public string ClientPhoneNumber { get; set; }
-        [Required]
-        [MaxLength(50)]
-        public string City { get; set; }
-        [Required]
-        [MaxLength(50)]
-        public string Street { get; set; }
-        public string PostalCode { get; set; }
-        [Required]
-        public string Status { get; set; }
-        public DateTime StatusRegistrationDate { get; set; }
+        public string Size { get; set; }
+        public string Position { get; set; }
+        public string CategoryName { get; set; }
+        public string HSCode { get; set; }
+        public bool IsAvaiable { get; } = false;
+        public int SupplierId { get; set; }
+        public bool IsActive { get; } = true;
+        public string Status { get; } = PackageStatus.OutOfWarehouse;
+        public DateTime StatusRegistrationDate { get; } = DateTime.Now;
 
     }
 }

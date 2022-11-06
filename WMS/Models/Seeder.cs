@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using WMS.Models.Entities;
+using WMS.ExtensionMethods;
 
 namespace WMS.Models
 {
@@ -16,6 +17,8 @@ namespace WMS.Models
         {
             if (_dbContext.Database.CanConnect())
             {
+                Randomizer.Seed = new Random(911);
+
                 if (!_dbContext.Roles.Any())
                 {
                     var roles = GetRoles();
@@ -23,53 +26,45 @@ namespace WMS.Models
                     _dbContext.SaveChanges();
                 }
 
-
-                //if (!_dbContext.Statuses.Any())
-                //{
-                //    var statuses = GetStatuses();
-                //    _dbContext.Statuses.AddRange(statuses);
-                //    _dbContext.SaveChanges();
-                //}
-            }
+                var addressGenerator = new Faker<Address>()
+                    .RuleFor(a => a.City, f => f.Address.City())
+                    .RuleFor(a => a.Street, f => f.Address.StreetName())
+                    .RuleFor(a => a.PostalCode, f => f.Address.ZipCode())
+                    .RuleFor(a => a.Country, f => f.Address.Country());
 
 
-            var addressGenerator = new Faker<Address>()
-                .RuleFor(a => a.City, f => f.Address.City())
-                .RuleFor(a => a.Street, f => f.Address.StreetName())
-                .RuleFor(a => a.PostalCode, f => f.Address.ZipCode())
-                .RuleFor(a => a.Country, f => f.Address.Country());
+                var categoryGenerator = new Faker<Category>()
+                    .RuleFor(c => c.Name, f => f.Commerce.Color())
+                    .RuleFor(c => c.HSCode, f => f.Commerce.Ean8());
 
 
-            var categoryGenerator = new Faker<Category>()
-                .RuleFor(c => c.Name, f => f.Commerce.Color())
-                .RuleFor(c => c.HSCode, f =>f.Commerce.Ean8());
+                var statuses = new[] { "Out Of Warehouse", "Delivered", "Placed in Warehouse", "Sent" };
+                var statusGenerator = new Faker<Status>()
+                    .RuleFor(s => s.PackageStatus, f => f.PickRandom(statuses));
 
+                var sizes = new[] { "Small", "Medium", "Large" };
+                var productGenerator = new Faker<Product>()
+                    .RuleFor(p => p.Name, f => f.Commerce.ProductName())
+                    .RuleFor(p => p.Quantity, f => f.PickRandom(1, 10))
+                    .RuleFor(p => p.IsAvaiable, f => f.Random.Bool())
+                    .RuleFor(p => p.ProductionDate, f => DateTime.Now)
+                    .RuleFor(p => p.Size, f => f.PickRandom(sizes))
+                    .RuleFor(p => p.Position, f => f.Random.Double(1, 9.9).ToString())
+                    .RuleFor(p => p.Categories, f => categoryGenerator.Generate(5))
+                    .RuleFor(p => p.Statuses, f => statusGenerator.Generate(2));
 
-            var statuses = new[] { "Delivered", "Placed in stock", "Sent" };
-            var statusGenerator = new Faker<Status>()
-                .RuleFor(s => s.PackageStatus, f => f.PickRandom(statuses));
+                var supplierGenerator = new Faker<Supplier>()
+                    .RuleFor(s => s.Name, f => f.Name.FullName())
+                    .RuleFor(s => s.Email, f => f.Internet.Email())
+                    .RuleFor(s => s.PhoneNumber, f => f.Phone.PhoneNumber())
+                    .RuleFor(s => s.Address, f => addressGenerator.Generate())
+                    .RuleFor(s => s.Products, f => productGenerator.Generate(20));
 
-            var sizes = new[] { "Small", "Medium", "Large" };
-            var productGenerator = new Faker<Product>()
-                .RuleFor(p => p.Name, f => f.Commerce.ProductName())
-                .RuleFor(p => p.Quantity, f => f.PickRandom(1, 10))
-                .RuleFor(p => p.IsAvaiable, f => f.Random.Bool())
-                .RuleFor(p => p.ProductionDate, f => DateTime.Now)
-                .RuleFor(p => p.Size, f => f.PickRandom(sizes))
-                .RuleFor(p => p.Position, f => f.Random.Double(1, 9.9).ToString())
-                .RuleFor(p => p.Categories, f => categoryGenerator.Generate(5))
-                .RuleFor(p => p.Statuses, f => statusGenerator.Generate(2));
+                var supplier = supplierGenerator.Generate(20);
 
-            var supplierGenerator = new Faker<Supplier>()
-                .RuleFor(s => s.Name, f => f.Name.FullName())
-                .RuleFor(s => s.Email, f => f.Internet.Email())
-                .RuleFor(s => s.PhoneNumber, f => f.Phone.PhoneNumber())
-                .RuleFor(s => s.Address, f => addressGenerator.Generate())
-                .RuleFor(s => s.Products, f => productGenerator.Generate(20));
-
-            var supplier = supplierGenerator.Generate(20);
-            _dbContext.AddRange(supplier);
-            _dbContext.SaveChanges();
+                _dbContext.AddRange(supplier);
+                _dbContext.SaveChanges();
+            } 
         }
 
         private IEnumerable<Role> GetRoles()

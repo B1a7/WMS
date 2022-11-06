@@ -6,9 +6,8 @@ namespace WMS.Models.Dtos
     {
         public string Name { get; set; }
         public int Quantity { get; set; }
-        public int IsAvaiable { get; set; }
 
-        public virtual List<Status> Statuses { get; set; }
-
+        public string CategoryName { get; set; }
+        public string HSCode { get; set; }
     }
 }

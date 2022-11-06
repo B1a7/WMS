@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using WMS.Enums;
 using WMS.Exceptions;
 using WMS.Models;
 using WMS.Models.Dtos;
@@ -15,7 +16,10 @@ namespace WMS.Services
         void Delete(int id);
         void Update(int id, UpdateProductDto dto);
         PagedResult<ProductDto> GetAll(ProductQuery query);
-        Product GetFullDetailsById(int id);
+        ProductDetailDto GetFullDetailsById(int id);
+        string GetPlacement(int id);
+        ProductDto ChangeStatus(int id, string newPackageStatus);
+        List<ProductStatusDto> GetProductHistory(int id);
     }
 
     public class ProductService : IProductService
@@ -24,7 +28,8 @@ namespace WMS.Services
         private readonly ILogger<ProductService> _logger;
         private readonly IMapper _mapper;
 
-        public ProductService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper )
+
+        public ProductService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper)
         {
             _dbContext = dbContext;
             _logger = logger;
@@ -32,37 +37,72 @@ namespace WMS.Services
         }
 
 
-        public int AddProduct(AddProductDto dto)
+        public int AddProduct( AddProductDto dto)
         {
-            return 0;
+            var newProduct = _mapper.Map<Product>(dto);
+
+            _dbContext.Products.Add(newProduct);
+            _dbContext.SaveChanges();
+
+            return newProduct.Id;
         }
 
-        public ProductDto GetById(int id)
+        public void Update(int id, UpdateProductDto dto)
         {
-            var product = _dbContext
-                .Products
-                .Include(p => p.Supplier)
-                .Include(p => p.Categories)
-                .Include(p => p.Statuses)
-                .FirstOrDefault(p => p.Id == id);
+            _logger.LogError($"Product with id: {id} UPDATE action invoked");
+
+            var product = GetProduct(id);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
 
+            product.Name = dto.Name;
+            product.Quantity = dto.Quantity;
+            product.Categories.Add(new Category() { Name = dto.CategoryName, HSCode = dto.HSCode });
+
+            _dbContext.SaveChanges();
+        }
+        
+        public ProductDto ChangeStatus(int id, string newPackageStatus)
+        {
+            var product = GetProduct(id);
+
+            if (product is null)
+                throw new NotFoundException("Product not found");
+            if (!PackageStatus.PackageStatuses.Contains(newPackageStatus))
+                throw new BadRequestException($"Status can be only :{PackageStatus.PackageStatuses.ToString()}");
+            if (product.Statuses != null)
+                product.Statuses.ForEach(s => s.IsActive = false);
+
+            var newStatus = new Status()
+            {
+                IsActive = true,
+                PackageStatus = newPackageStatus,
+                ProductId = id
+            };
+
+            _dbContext.Statuses.Add(newStatus);
+            _dbContext.SaveChanges();
+
             var result = _mapper.Map<ProductDto>(product);
+
             return result;
         }
 
         public void Delete(int id)
         {
+            _logger.LogError($"Product with id: {id} DELETE action invoked");
 
+            var product = _dbContext.Products
+                .FirstOrDefault(p => p.Id == id);
+
+            if (product is null)
+                throw new NotFoundException("Product not found");
+
+            _dbContext.Products.Remove(product);
+            _dbContext.SaveChanges();
         }
-
-        public void Update(int id, UpdateProductDto dto)
-        {
-
-        }
-
+        
         public PagedResult<ProductDto> GetAll(ProductQuery query)
         {
             var baseQuery = _dbContext
@@ -102,7 +142,7 @@ namespace WMS.Services
             return result;
         }
 
-        public Product GetFullDetailsById(int id)
+        public ProductDto GetById(int id)
         {
             var product = _dbContext
                 .Products
@@ -114,10 +154,68 @@ namespace WMS.Services
             if (product is null)
                 throw new NotFoundException("Product not found");
 
-           
-            return product;
+            var result = _mapper.Map<ProductDto>(product);
+            return result;
         }
 
+        public ProductDetailDto GetFullDetailsById(int id)
+        {
+            var product = GetProduct(id);
+
+            if (product is null)
+                throw new NotFoundException("Product not found");
+
+            var result = _mapper.Map<ProductDetailDto>(product);
+
+            return result;
+        }
+
+        public string GetPlacement(int id)
+        {
+            var productPlacement = _dbContext.Products
+                .FirstOrDefault(p => p.Id == id).Position;
+
+            if (productPlacement is null)
+                throw new NotFoundException("product is not in our Warehouse");
+
+            return productPlacement;
+        }
+
+        public List<ProductStatusDto> GetProductHistory(int id)
+        {
+            var product = GetProduct(id);
+
+            var statuses = product.Statuses;
+
+            List<ProductStatusDto> result = new List<ProductStatusDto>(); 
+            
+            foreach (var status in statuses)
+            {
+                result.Add(new ProductStatusDto()
+                {
+                    DateStatus = status.DateStatus,
+                    PackageStatus = status.PackageStatus,
+                    IsActive = status.IsActive
+                });
+            }
+
+            return result;
+        }
+
+
+
+        //TODO: move it to extension helper class
+        public Product GetProduct(int id)
+        {
+            var product = _dbContext
+                .Products
+                .Include(p => p.Supplier)
+                .Include(p => p.Categories)
+                .Include(p => p.Statuses)
+                .FirstOrDefault(p => p.Id == id);
+
+            return product;
+        }
     }
 }
  

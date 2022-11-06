@@ -26,7 +26,31 @@ namespace WMS.Controllers
         {
             var id = _productService.AddProduct(dto);
 
-            return Created($"/api/produuct/{id}", null);
+            return Created($"/api/product/{id}", null);
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult Update([FromBody] UpdateProductDto dto, [FromRoute]int id)
+        {
+            _productService.Update(id, dto);
+
+            return Ok();
+        }
+
+        [HttpPut("changestatus/{id}")]
+        public ActionResult ChangeStatus([FromRoute] int id, [FromBody] string newPackageStatus)
+        {
+            var product = _productService.ChangeStatus(id, newPackageStatus);
+
+            return Ok(product);
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult Delete([FromRoute] int id)
+        {
+            _productService.Delete(id);
+
+            return NoContent();
         }
 
         [HttpGet]
@@ -45,28 +69,28 @@ namespace WMS.Controllers
             return Ok(product);
         }
 
-        //[HttpGet("{product/id}")]
-        //public ActionResult<Product> GetFullDetailsById([FromRoute] int id)
-        //{
-        //    var product = _productService.GetFullDetailsById(id);
-
-        //    return Ok(product);
-        //}
-
-        [HttpPut("{id}")]
-        public ActionResult Update([FromBody] UpdateProductDto dto, [FromRoute]int id)
+        [HttpGet("detail/{id}")]
+        public ActionResult<ProductDetailDto> GetFullDetailsById([FromRoute] int id)
         {
-            _productService.Update(id, dto);
+            var product = _productService.GetFullDetailsById(id);
 
-            return Ok();
+            return Ok(product);
         }
 
-        [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] int id)
+        [HttpGet("placement/{id}")]
+        public ActionResult GetPlacement([FromRoute] int id)
         {
-            _productService.Delete(id);
+            var placement = _productService.GetPlacement(id);
 
-            return NoContent();
+            return Ok(placement);
+        }
+
+        [HttpGet("history/{id}")]
+        public ActionResult GetProductHistory([FromRoute] int id)
+        {
+            var statusList = _productService.GetProductHistory(id);
+
+            return Ok(statusList);
         }
     }
 }
