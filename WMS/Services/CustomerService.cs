@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using WMS.Enums;
+using WMS.Exceptions;
 using WMS.Models;
 using WMS.Models.Dtos;
 using WMS.Models.Dtos.Customer;
@@ -11,7 +12,12 @@ namespace WMS.Services
 {
     public interface ICustomerService
     {
+        int AddSupplier(AddSupplierDto dto);
+        void Update(UpdateSupplierDto dto, int id);
+        void Delete(int id);
         PagedResult<SupplierDto> GetAll(SupplierQuery query);
+        SupplierDetailDto GetById(int id);
+        List<Product> GetSupplierProducts(int id);
     }
 
     public class CustomerService : ICustomerService
@@ -28,6 +34,52 @@ namespace WMS.Services
             _mapper = mapper;
         }
 
+
+        public int AddSupplier(AddSupplierDto dto)
+        {
+            var supplier = _mapper.Map<Supplier>(dto);
+
+            _dbContext.Suppliers.Add(supplier);
+            _dbContext.SaveChanges();
+
+            return supplier.Id;
+        }
+
+        public void Update(UpdateSupplierDto dto, int id)
+        {
+            _logger.LogError($"Supplier with id: {id} UPDATE action invoked");
+
+            var supplier = _dbContext.Suppliers
+                .Include(s => s.Address)
+                .FirstOrDefault(s => s.Id == id);
+
+            if (supplier is null)
+                throw new NotFoundException("Supplier not found");
+
+            supplier.Name = dto.Name;
+            supplier.Email = dto.Email;
+            supplier.PhoneNumber = dto.PhoneNumber;
+            supplier.Address.City = dto.City;
+            supplier.Address.Street = dto.Street;
+            supplier.Address.Country = dto.Country;
+            supplier.Address.PostalCode = dto.PostalCode;
+
+            _dbContext.SaveChanges();
+        }
+
+        public void Delete(int id)
+        {
+            _logger.LogError($"Supplier with id: {id} DELETE action invoked");
+
+            var supplier = _dbContext.Suppliers
+                .FirstOrDefault(s => s.Id == id);
+
+            if (supplier is null)
+                throw new NotFoundException("Supplier not found");
+
+            _dbContext.Suppliers.Remove(supplier);
+            _dbContext.SaveChanges();
+        }
 
         public PagedResult<SupplierDto> GetAll(SupplierQuery query)
         {
@@ -68,5 +120,23 @@ namespace WMS.Services
             return result;
         }
 
+        public SupplierDetailDto GetById(int id)
+        {
+            var supplier = _dbContext.Suppliers
+                .Include(s => s.Address)
+                .FirstOrDefault(s => s.Id == id);
+
+            if (supplier is null)
+                throw new NotFoundException("Supplier not found");
+
+            var result  = _mapper.Map<SupplierDetailDto>(supplier);
+
+            return result;
+        }
+
+        public List<Product> GetSupplierProducts(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

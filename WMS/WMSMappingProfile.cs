@@ -32,6 +32,22 @@ namespace WMS
 
             CreateMap<Supplier, SupplierDto>();
 
+            CreateMap<Supplier, SupplierDetailDto>()
+                .ForMember(m => m.City, c => c.MapFrom(e => e.Address.City))
+                .ForMember(m => m.Street, c => c.MapFrom(e => e.Address.Street))
+                .ForMember(m => m.Country, c => c.MapFrom(e => e.Address.Country))
+                .ForMember(m => m.PostalCode, c => c.MapFrom(e => e.Address.PostalCode));
+
+            CreateMap<Supplier, UpdateSupplierDto>()
+                .ForMember(m => m.City, c => c.MapFrom(e => e.Address.City))
+                .ForMember(m => m.Street, c => c.MapFrom(e => e.Address.Street))
+                .ForMember(m => m.Country, c => c.MapFrom(e => e.Address.Country))
+                .ForMember(m => m.PostalCode, c => c.MapFrom(e => e.Address.PostalCode));
+
+            CreateMap<AddSupplierDto, Supplier>()
+                .ForMember(s => s.Address, c => c.MapFrom(dto => new Address()
+                { City = dto.City, Street = dto.Street, Country = dto.Country, PostalCode = dto.PostalCode }));
+
         }
     }
 }
