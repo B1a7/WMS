@@ -17,7 +17,7 @@ namespace WMS.Services
         void Delete(int id);
         PagedResult<SupplierDto> GetAll(SupplierQuery query);
         SupplierDetailDto GetById(int id);
-        List<Product> GetSupplierProducts(int id);
+        List<SupplierProductDto> GetSupplierProducts(int id);
     }
 
     public class CustomerService : ICustomerService
@@ -134,9 +134,23 @@ namespace WMS.Services
             return result;
         }
 
-        public List<Product> GetSupplierProducts(int id)
+        public List<SupplierProductDto> GetSupplierProducts(int id)
         {
-            throw new NotImplementedException();
+            var supplier = _dbContext.Suppliers
+                .Include(s => s.Products)
+                .FirstOrDefault(s => s.Id == id);
+
+            if (supplier is null)
+                throw new NotFoundException("Supplier not found");
+
+            var ProductList = _dbContext.Products
+                .Where(p => p.Supplier.Id == id)
+                .ToList();
+
+            var result = _mapper.Map<List<SupplierProductDto>>(ProductList);
+            
+            return result;
+
         }
     }
 }

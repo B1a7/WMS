@@ -48,6 +48,10 @@ namespace WMS
                 .ForMember(s => s.Address, c => c.MapFrom(dto => new Address()
                 { City = dto.City, Street = dto.Street, Country = dto.Country, PostalCode = dto.PostalCode }));
 
+            CreateMap<Product, SupplierProductDto>()
+                .ForMember(m => m.DateStatus, c => c.MapFrom(e => e.Statuses.FirstOrDefault(x => x.IsActive).DateStatus))
+                .ForMember(m => m.PackageStatus, c => c.MapFrom(e => e.Statuses.FirstOrDefault(x => x.IsActive).PackageStatus));
+
         }
     }
 }
