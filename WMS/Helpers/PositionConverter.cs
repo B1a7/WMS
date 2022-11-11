@@ -20,7 +20,7 @@ namespace WMS.Helpers
 
             successfullyParsed = successfullyParsed & int.TryParse(splitted[0], out x);
             successfullyParsed = successfullyParsed & int.TryParse(splitted[1], out y);
-            successfullyParsed = successfullyParsed & int.TryParse(splitted[3], out z);
+            successfullyParsed = successfullyParsed & int.TryParse(splitted[2], out z);
 
             if (!successfullyParsed)
                 throw new NotFoundException("Cannot convert position");

@@ -94,12 +94,11 @@ namespace WMS.Models
             var statuses = new List<Status>()
             {
                 new Status()
-                { 
-                    = "Delivered" },
+                { PackageStatus = "delivered" },
                 new Status()
-                { PackageStatus = "Placed in stock" },
+                { PackageStatus = "placed in stock" },
                 new Status()
-                { PackageStatus = "Sent" }
+                { PackageStatus = "sent" }
             };
             return statuses;
         }
