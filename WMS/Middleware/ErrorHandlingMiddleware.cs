@@ -26,6 +26,11 @@ namespace WMS.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(badRequestException.Message);
             }
+            catch (NotAcceptable notAcceptable)
+            {
+                context.Response.StatusCode = 406;
+                await context.Response.WriteAsync(notAcceptable.Message);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);

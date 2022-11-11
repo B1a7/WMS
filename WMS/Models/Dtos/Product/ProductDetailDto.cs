@@ -5,7 +5,8 @@
         public string Name { get; set; }
         public int Quantity { get; set; }
         public DateTime ProductionDate { get; set; }
-        public string Position { get; set; }
+        public string Size { get; set; }
+        public string? Position { get; set; }
         public bool IsAvaiable { get; set; }
 
         public DateTime DateStatus { get; set; }

@@ -101,7 +101,7 @@ namespace WMS.Services
 
                 var selectedColumn = columnSelectors[query.SortBy];
 
-                baseQuery = query.SortDirection == SortDirection.ASC
+                baseQuery = query.SortDirection == SortDirectionEnum.ASC
                     ? baseQuery.OrderBy(selectedColumn)
                     : baseQuery.OrderByDescending(selectedColumn);
             }
@@ -137,13 +137,16 @@ namespace WMS.Services
         public List<SupplierProductDto> GetSupplierProducts(int id)
         {
             var supplier = _dbContext.Suppliers
-                .Include(s => s.Products)
+                .Include(s => s.Products)      
                 .FirstOrDefault(s => s.Id == id);
 
             if (supplier is null)
                 throw new NotFoundException("Supplier not found");
 
             var ProductList = _dbContext.Products
+                .Include(p => p.Categories)
+                .Include(p => p.Layout)
+                .Include(p => p.Statuses)
                 .Where(p => p.Supplier.Id == id)
                 .ToList();
 

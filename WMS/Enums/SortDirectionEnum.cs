@@ -1,6 +1,6 @@
 ﻿namespace WMS.Enums
 {
-    public enum SortDirection
+    public enum SortDirectionEnum
     {
         ASC,
         DESC

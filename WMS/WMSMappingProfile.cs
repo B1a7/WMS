@@ -17,12 +17,15 @@ namespace WMS
 
             CreateMap<Product, ProductDetailDto>()
                 .ForMember(m => m.SupplierName, c => c.MapFrom(e => e.Supplier.Name))
-                .ForMember(m => m.SupplierName, c => c.MapFrom(e => e.Supplier.Email))
-                .ForMember(m => m.SupplierName, c => c.MapFrom(e => e.Supplier.PhoneNumber))
+                .ForMember(m => m.SupplierEmail, c => c.MapFrom(e => e.Supplier.Email))
+                .ForMember(m => m.SupplierPhoneNumber, c => c.MapFrom(e => e.Supplier.PhoneNumber))
                 .ForMember(m => m.PackageStatus, c => c.MapFrom(e => e.Statuses.Where(x => x.IsActive).FirstOrDefault().PackageStatus))
                 .ForMember(m => m.DateStatus, c => c.MapFrom(e => e.Statuses.Where(x => x.IsActive).FirstOrDefault().DateStatus))
                 .ForMember(m => m.CategoryName, c => c.MapFrom(e => e.Categories.Select(x => x.Name).ToList()))
-                .ForMember(m => m.CategoryHSCode, c => c.MapFrom(e => e.Categories.Select(x => x.HSCode).ToList()));
+                .ForMember(m => m.CategoryHSCode, c => c.MapFrom(e => e.Categories.Select(x => x.HSCode).ToList()))
+                .ForMember(m => m.Position, c => c.MapFrom(e => e.Layout.PositionXYZ));
+                
+
 
             CreateMap<AddProductDto, Product>()
                 .ForMember(m => m.Categories, c => c.MapFrom(dto => new List<Category>(){
@@ -50,7 +53,8 @@ namespace WMS
 
             CreateMap<Product, SupplierProductDto>()
                 .ForMember(m => m.DateStatus, c => c.MapFrom(e => e.Statuses.FirstOrDefault(x => x.IsActive).DateStatus))
-                .ForMember(m => m.PackageStatus, c => c.MapFrom(e => e.Statuses.FirstOrDefault(x => x.IsActive).PackageStatus));
+                .ForMember(m => m.PackageStatus, c => c.MapFrom(e => e.Statuses.FirstOrDefault(x => x.IsActive).PackageStatus))
+                .ForMember(m => m.Position, c => c.MapFrom(e => e.Layout.PositionXYZ));
 
         }
     }

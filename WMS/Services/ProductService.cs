@@ -70,7 +70,7 @@ namespace WMS.Services
 
             if (product is null)
                 throw new NotFoundException("Product not found");
-            if (!PackageStatus.PackageStatuses.Contains(newPackageStatus))
+            if (!PackageStatus.PackageStatuses.Contains(newPackageStatus.ToLower()))
                 throw new BadRequestException($"Status can be only :{PackageStatus.PackageStatuses.ToString()}");
             if (product.Statuses != null)
                 product.Statuses.ForEach(s => s.IsActive = false);
@@ -111,6 +111,7 @@ namespace WMS.Services
                 .Include(p => p.Supplier)
                 .Include(p => p.Categories)
                 .Include(p => p.Statuses)
+                .Include(p => p.Layout)
                 .Where(p => query.SearchPhrase == null || (p.Name.ToLower().Contains(query.SearchPhrase.ToLower())
                             || p.Statuses.Where(s => s.IsActive).FirstOrDefault().PackageStatus.ToLower()
                                 .Contains(query.SearchPhrase.ToLower())));
@@ -124,7 +125,7 @@ namespace WMS.Services
 
                 var selectedColumn = columnSelectors[query.SortBy];
 
-                baseQuery = query.SortDirection == SortDirection.ASC
+                baseQuery = query.SortDirection == SortDirectionEnum.ASC
                     ? baseQuery.OrderBy(selectedColumn)
                     : baseQuery.OrderByDescending(selectedColumn);
             }
@@ -150,6 +151,7 @@ namespace WMS.Services
                 .Include(p => p.Supplier)
                 .Include(p => p.Categories)
                 .Include(p => p.Statuses)
+                .Include(p => p.Layout)
                 .FirstOrDefault(p => p.Id == id);
 
             if (product is null)
@@ -174,7 +176,8 @@ namespace WMS.Services
         public string GetPlacement(int id)
         {
             var productPlacement = _dbContext.Products
-                .FirstOrDefault(p => p.Id == id).Position;
+                .Include(p => p.Layout)
+                .FirstOrDefault(p => p.Id == id).Layout.PositionXYZ;
 
             if (productPlacement is null)
                 throw new NotFoundException("product is not in our Warehouse");
@@ -213,6 +216,7 @@ namespace WMS.Services
                 .Include(p => p.Supplier)
                 .Include(p => p.Categories)
                 .Include(p => p.Statuses)
+                .Include(p => p.Layout)
                 .FirstOrDefault(p => p.Id == id);
 
             return product;

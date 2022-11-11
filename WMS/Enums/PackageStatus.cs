@@ -3,10 +3,10 @@
     public static class PackageStatus
     {
         public static List<string> PackageStatuses { get; }
-        public static string OutOfWarehouse { get { return "Out Of Warehouse"; } }
-        public static string Delivered { get { return "Delivered"; } }
-        public static string Sent { get { return "Sent"; } }
-        public static string PlacedInWarehouse { get { return "Placed In Warehouse"; } }
+        public static string OutOfWarehouse { get { return "out of warehouse"; } }
+        public static string Delivered { get { return "delivered"; } }
+        public static string Sent { get { return "sent"; } }
+        public static string PlacedInWarehouse { get { return "placed in warehouse"; } }
 
         static PackageStatus()
         {

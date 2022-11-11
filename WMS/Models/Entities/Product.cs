@@ -8,8 +8,10 @@
         public bool IsAvaiable { get; set; }
         public DateTime ProductionDate { get; set; }
         public string Size { get; set; }
-        public string Position { get; set; }
 
+
+        public int? LayoutId { get; set; }
+        public virtual Layout Layout { get; set; }
 
         public virtual List<Category> Categories { get; set; }
 

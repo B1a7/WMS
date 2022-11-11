@@ -9,7 +9,6 @@ namespace WMS.Models.Dtos.Product
         public int Quantity { get; set; }
         public DateTime ProductionDate { get; set; }
         public string Size { get; set; }
-        public string Position { get; set; }
         public string CategoryName { get; set; }
         public string HSCode { get; set; }
         public bool IsAvaiable { get; } = false;

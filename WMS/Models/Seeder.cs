@@ -38,18 +38,26 @@ namespace WMS.Models
                     .RuleFor(c => c.HSCode, f => f.Commerce.Ean8());
 
 
-                var statuses = new[] { "Out Of Warehouse", "Delivered", "Placed in Warehouse", "Sent" };
+                var statuses = new[] { "out of warehouse", "delivered", "placed in warehouse", "sent" };
                 var statusGenerator = new Faker<Status>()
+                    .RuleFor(s => s.IsActive, f => f.Random.Bool())
                     .RuleFor(s => s.PackageStatus, f => f.PickRandom(statuses));
 
-                var sizes = new[] { "Small", "Medium", "Large" };
+                var random = new Random();
+                var spotSizes = new[] { "small", "medium", "large" };
+                var layoutsGenerator = new Faker<Layout>()
+                    .RuleFor(l => l.SpotSize, f => f.PickRandom(spotSizes))
+                    .RuleFor(l => l.PositionXYZ, f => $"{random.Next(1,10)}.{random.Next(1, 10)}.1");
+
+
+                var sizes = new[] { "small", "medium", "large" };
                 var productGenerator = new Faker<Product>()
                     .RuleFor(p => p.Name, f => f.Commerce.ProductName())
                     .RuleFor(p => p.Quantity, f => f.PickRandom(1, 10))
                     .RuleFor(p => p.IsAvaiable, f => f.Random.Bool())
                     .RuleFor(p => p.ProductionDate, f => DateTime.Now)
                     .RuleFor(p => p.Size, f => f.PickRandom(sizes))
-                    .RuleFor(p => p.Position, f => f.Random.Double(1, 9.9).ToString())
+                    .RuleFor(p => p.Layout, f => layoutsGenerator.Generate())
                     .RuleFor(p => p.Categories, f => categoryGenerator.Generate(5))
                     .RuleFor(p => p.Statuses, f => statusGenerator.Generate(2));
 
@@ -86,7 +94,8 @@ namespace WMS.Models
             var statuses = new List<Status>()
             {
                 new Status()
-                { PackageStatus = "Delivered" },
+                { 
+                    = "Delivered" },
                 new Status()
                 { PackageStatus = "Placed in stock" },
                 new Status()
