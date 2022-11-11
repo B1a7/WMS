@@ -66,7 +66,9 @@ namespace WMS.Services
         
         public ProductDto ChangeStatus(int id, string newPackageStatus)
         {
-            var product = GetProduct(id);
+            var product = _dbContext.Products
+                    .Include(p => p.Statuses)
+                    .FirstOrDefault(p => p.Id == id);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
@@ -187,9 +189,10 @@ namespace WMS.Services
 
         public List<ProductStatusDto> GetProductHistory(int id)
         {
-            var product = GetProduct(id);
-
-            var statuses = product.Statuses;
+            var statuses = _dbContext.Products
+                           .Include(p => p.Statuses)
+                           .FirstOrDefault(p => p.Id == id)
+                           .Statuses;
 
             List<ProductStatusDto> result = new List<ProductStatusDto>(); 
             
