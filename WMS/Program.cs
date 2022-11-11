@@ -1,6 +1,8 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
 using System.Reflection;
@@ -45,7 +47,8 @@ builder.Services.AddControllers().AddFluentValidation(); ;
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<RequestTimeMiddleware>();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<WMSDbContext>();
+builder.Services.AddDbContext<WMSDbContext>(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("WMSConnection")));
 builder.Services.AddScoped<Seeder>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<IProductService, ProductService>();

@@ -1,6 +1,6 @@
 ﻿namespace WMS.Controllers
 {
-    public class ChartController
+    public class QRCodeController
     {
     }
 }

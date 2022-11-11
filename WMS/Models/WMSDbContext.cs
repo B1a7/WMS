@@ -5,9 +5,6 @@ namespace WMS.Models
 {
     public class WMSDbContext : DbContext
     {
-        //TODO: set connection string in app.config
-        private string _conectionString = "Server=(localdb)\\localdb;Database=WMSDb;Trusted_Connection=True;";
-
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
@@ -18,16 +15,16 @@ namespace WMS.Models
         public DbSet<Layout> Layouts { get; set; }
 
 
+        public WMSDbContext(DbContextOptions<WMSDbContext> options) : base(options)
+        {
+
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_conectionString);
-
-        }
     }
 }
