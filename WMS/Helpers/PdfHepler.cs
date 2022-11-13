@@ -7,7 +7,12 @@ using WMS.Models;
 
 namespace WMS.Helpers
 {
-    public class PdfHepler
+    public interface IPdfHepler
+    {
+        (byte[], string, string) GetDocumentation (int id, string pdfName);
+    }
+
+    public class PdfHepler : IPdfHepler
     {
         private readonly IMapper _mapper;
         private readonly WMSDbContext _dbContext;
@@ -43,24 +48,17 @@ namespace WMS.Helpers
             return html;
         }
 
-        public (byte[], string, string) GenerateProductLabel(int id)
+        public (byte[], string, string) GetDocumentation(int id, string pdfName)
         {
-            var product = _dbContext.Products
-                .Include(p => p.Supplier)
-                .FirstOrDefault(p => p.Id == id);
-
-            if (product == null)
-                throw new NotFoundException("Cannot find product");
-
-            var fileName = "ProductLabel.pdf";
+            var fileName = $"{pdfName}.pdf";
             var filePath = $"{rootPath}/ProductDocumentation/{fileName}";
 
-            var htmlFile = "ProductLabel.html";
+            var htmlFile = $"{pdfName}.html";
 
             var content = GetHtmlSchema(htmlFile);
-          
-            return GeneratePdf(fileName, filePath, content);
-        }
 
+            var result = GeneratePdf(fileName, filePath, content);
+            return result;
+        }
     }
 }

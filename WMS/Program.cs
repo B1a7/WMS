@@ -8,6 +8,7 @@ using NLog.Web;
 using System.Reflection;
 using System.Text;
 using WMS;
+using WMS.Helpers;
 using WMS.Middleware;
 using WMS.Models;
 using WMS.Models.Dtos.Account;
@@ -59,6 +60,7 @@ builder.Services.AddScoped<ILayoutService, LayoutService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IValidator<ProductQuery>, ProductQueryValidatior>();
+builder.Services.AddScoped<IPdfHepler,PdfHepler>();
 
 var app = builder.Build();
 

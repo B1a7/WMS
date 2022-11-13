@@ -14,7 +14,7 @@ namespace WMS.Services
     {
         (byte[], string, string) GenerateProductLabel(int id);
         (byte[], string, string) GenerateProductDocument(int id);
-        string GenerateSupplierLabel(int id);
+        (byte[], string, string) GenerateSupplierLabel(int id);
         (byte[], string, string) GenerateSupplierDocument(int id);
     }
 
@@ -23,13 +23,15 @@ namespace WMS.Services
         private readonly WMSDbContext _dbContext;
         private readonly ILogger<DocumentationService> _logger;
         private readonly IMapper _mapper;
+        private readonly IPdfHepler _pdfHepler;
 
-
-        public DocumentationService(WMSDbContext dbContext, ILogger<DocumentationService> logger, IMapper mapper)
+        public DocumentationService(WMSDbContext dbContext, ILogger<DocumentationService> logger, IMapper mapper,
+            IPdfHepler pdfHepler)
         {
             _dbContext = dbContext;
             _logger = logger;
             _mapper = mapper;
+            _pdfHepler = pdfHepler;
         }
 
 
@@ -46,79 +48,64 @@ namespace WMS.Services
 
             productQR.GenerateQR();
 
-            var rootPath = Directory.GetCurrentDirectory();
-            var fileName = "QRCode.png";
-            var filePath = $"{rootPath}/ProductDocumentation/{fileName}";
+            var result = _pdfHepler.GetDocumentation(id,"ProductLabel");   
 
-
-            var fileExist = File.Exists(filePath);
-            if (!fileExist)
-                throw new NotFoundException("file not exists");
-
-            var contentProvider = new FileExtensionContentTypeProvider();
-            contentProvider.TryGetContentType(fileName, out string contentType);
-
-            var fileContent = File.ReadAllBytes(filePath);
-
-            return (fileContent, contentType, fileName);
+            return result;
         }
-        
-        public string GenerateSupplierLabel(int id)
+
+        public (byte[], string, string) GenerateSupplierLabel(int id)
         {
-            return string.Empty;
+            var supplier = _dbContext.Suppliers
+                .FirstOrDefault(p => p.Id == id);
+
+            if (supplier == null)
+                throw new NotFoundException("Cannot find product");
+
+            var supplierQR = _mapper.Map<ProductQRDto>(supplier)
+                .ProductQrToString();
+
+            supplierQR.GenerateQR();
+
+            var result = _pdfHepler.GetDocumentation(id, "SupplierLabel");
+
+            return result;
         }
         
         public (byte[], string, string) GenerateProductDocument(int id)
         {
-            var htmlLines = new ChromePdfRenderer();
-
-            var product = _dbContext.Products
-                .Include(p => p.Supplier)
+            var supplier = _dbContext.Suppliers
                 .FirstOrDefault(p => p.Id == id);
 
-            if (product == null)
+            if (supplier == null)
                 throw new NotFoundException("Cannot find product");
 
-            var productLabel = _mapper.Map<ProductQRDto>(product)
+            var supplierQR = _mapper.Map<ProductQRDto>(supplier)
                 .ProductQrToString();
 
-            var rootPath = Directory.GetCurrentDirectory();
-            var fileName = "productLabel.pdf";
-            var filePath = $"{rootPath}/ProductDocumentation/{fileName}";
+            supplierQR.GenerateQR();
 
-            var fileExist = File.Exists(filePath);
-            if (!fileExist)
-                throw new NotFoundException("file not exists");
+            var result = _pdfHepler.GetDocumentation(id, "ProductDocument");
 
-            var contentProvider = new FileExtensionContentTypeProvider();
-            contentProvider.TryGetContentType(fileName, out string contentType);
-
-            var pdf = htmlLines.RenderHtmlAsPdf($"<h1> + {productLabel} </h1>")
-                .SaveAs(filePath);
-
-            var fileContent = File.ReadAllBytes(filePath);
-
-            return (fileContent, contentType, fileName);
+            return result;
         }
 
         public (byte[], string, string) GenerateSupplierDocument(int id)
         {
-            var rootPath = Directory.GetCurrentDirectory();
-            var fileName = "rdest.jpg";
+            var supplier = _dbContext.Suppliers
+                .FirstOrDefault(p => p.Id == id);
 
-            var filePath = $"{rootPath}/ProductDocumentation/{fileName}";
+            if (supplier == null)
+                throw new NotFoundException("Cannot find product");
 
-            var fileExist = File.Exists(filePath);
-            if (!fileExist)
-                throw new NotFoundException("file not exists");
+            var supplierQR = _mapper.Map<ProductQRDto>(supplier)
+                .ProductQrToString();
 
-            var contentProvider = new FileExtensionContentTypeProvider();
-            contentProvider.TryGetContentType(fileName, out string contentType);
+            supplierQR.GenerateQR();
 
-            var fileContent = File.ReadAllBytes(filePath);
+            var result = _pdfHepler.GetDocumentation(id, "SupplierDocument");
 
-            return (fileContent, contentType, fileName);
+            return result;
         }
-
+         
     }
 }
