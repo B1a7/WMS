@@ -13,11 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ProductDocumentation\rdest.jpg" />
+    <None Remove="Documentation\rdest.jpg" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="ProductDocumentation\rdest.jpg">
+    <Content Include="Documentation\rdest.jpg">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

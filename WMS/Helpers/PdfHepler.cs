@@ -9,19 +9,15 @@ namespace WMS.Helpers
 {
     public interface IPdfHepler
     {
-        (byte[], string, string) GetDocumentation (int id, string pdfName);
+        (byte[], string, string) GetDocumentation (string pdfName);
     }
 
     public class PdfHepler : IPdfHepler
     {
-        private readonly IMapper _mapper;
-        private readonly WMSDbContext _dbContext;
         private readonly string rootPath;
 
-        public PdfHepler(WMSDbContext dbContext, IMapper mapper)
+        public PdfHepler()
         {
-            _mapper = mapper;
-            _dbContext = dbContext;
             rootPath = Directory.GetCurrentDirectory();
         }
 
@@ -42,16 +38,16 @@ namespace WMS.Helpers
 
         private string GetHtmlSchema(string fileName)
         {
-            var filePath = $"{rootPath}/ProductDocumentation/{fileName}";
+            var filePath = $"{rootPath}/Documentation/{fileName}";
 
             string html = File.ReadAllText(filePath);
             return html;
         }
 
-        public (byte[], string, string) GetDocumentation(int id, string pdfName)
+        public (byte[], string, string) GetDocumentation(string pdfName)
         {
             var fileName = $"{pdfName}.pdf";
-            var filePath = $"{rootPath}/ProductDocumentation/{fileName}";
+            var filePath = $"{rootPath}/Documentation/{fileName}";
 
             var htmlFile = $"{pdfName}.html";
 

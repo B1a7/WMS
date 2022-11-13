@@ -61,6 +61,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IValidator<ProductQuery>, ProductQueryValidatior>();
 builder.Services.AddScoped<IPdfHepler,PdfHepler>();
+builder.Services.AddScoped<IQRHelper, QRHelper>();
 
 var app = builder.Build();
 

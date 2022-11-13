@@ -1,6 +1,6 @@
-﻿namespace WMS.Models.Dtos.Customer
+﻿namespace WMS.Models.Dtos.Documentation
 {
-    public class SupplierQRDto
+    public class SupplierQrDto
     {
         public int SupplierId { get; set; }
         public string Name { get; set; }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using WMS.Models.Dtos.Customer;
+using WMS.Models.Dtos.Documentation;
 using WMS.Models.Dtos.Product;
 using WMS.Models.Entities;
 
@@ -25,7 +26,7 @@ namespace WMS
                 .ForMember(m => m.CategoryHSCode, c => c.MapFrom(e => e.Categories.Select(x => x.HSCode).ToList()))
                 .ForMember(m => m.Position, c => c.MapFrom(e => e.Layout.PositionXYZ));
 
-            CreateMap<Product, ProductQRDto>()
+            CreateMap<Product, ProductQrDto>()
                 .ForMember(m => m.ProductId, c => c.MapFrom(e => e.Id));
 
             CreateMap<AddProductDto, Product>()
@@ -33,10 +34,19 @@ namespace WMS
                     new Category() { Name = dto.CategoryName, HSCode = dto.HSCode} }))
                 .ForMember(m => m.Statuses, c => c.MapFrom(dto => new List<Status>(){ 
                     new Status() { PackageStatus = dto.Status, IsActive = dto.IsActive, DateStatus = dto.StatusRegistrationDate }}));
+           
+            CreateMap<Product, ProductScanQrDto>()
+                .ForMember(m => m.SupplierName, c => c.MapFrom(e => e.Supplier.Name))
+                .ForMember(m => m.PackageStatus, c => c.MapFrom(e => e.Statuses.Where(x => x.IsActive).FirstOrDefault().PackageStatus))
+                .ForMember(m => m.DateStatus, c => c.MapFrom(e => e.Statuses.Where(x => x.IsActive).FirstOrDefault().DateStatus))
+                .ForMember(m => m.CategoryName, c => c.MapFrom(e => e.Categories.Select(x => x.Name).ToList()));
+
 
             CreateMap<Supplier, SupplierDto>();
 
-            CreateMap<Supplier, SupplierQRDto>()
+            CreateMap<Supplier, SupplierScanQrDto>();
+
+            CreateMap<Supplier, SupplierQrDto>()
                 .ForMember(m => m.SupplierId, c => c.MapFrom(e => e.Id));         
 
             CreateMap<Supplier, SupplierDetailDto>()

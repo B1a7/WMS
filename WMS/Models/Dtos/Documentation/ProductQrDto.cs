@@ -1,7 +1,6 @@
-﻿
-namespace WMS.Models.Dtos.Product
+﻿namespace WMS.Models.Dtos.Documentation
 {
-    public class ProductQRDto
+    public class ProductQrDto
     {
         public int ProductId { get; set; }
         public string Name { get; set; }
