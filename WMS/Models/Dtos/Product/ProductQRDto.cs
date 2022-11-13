@@ -3,9 +3,7 @@ namespace WMS.Models.Dtos.Product
 {
     public class ProductQRDto
     {
+        public int ProductId { get; set; }
         public string Name { get; set; }
-        public int Quantity { get; set; }
-        public bool IsAvaiable { get; set; }
-        public string SupplierName { get; set; }
     }
 }

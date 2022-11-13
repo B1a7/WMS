@@ -26,7 +26,7 @@ namespace WMS
                 .ForMember(m => m.Position, c => c.MapFrom(e => e.Layout.PositionXYZ));
 
             CreateMap<Product, ProductQRDto>()
-                .ForMember(m => m.SupplierName, c => c.MapFrom(e => e.Supplier.Name));
+                .ForMember(m => m.ProductId, c => c.MapFrom(e => e.Id));
 
             CreateMap<AddProductDto, Product>()
                 .ForMember(m => m.Categories, c => c.MapFrom(dto => new List<Category>(){
@@ -35,6 +35,9 @@ namespace WMS
                     new Status() { PackageStatus = dto.Status, IsActive = dto.IsActive, DateStatus = dto.StatusRegistrationDate }}));
 
             CreateMap<Supplier, SupplierDto>();
+
+            CreateMap<Supplier, SupplierQRDto>()
+                .ForMember(m => m.SupplierId, c => c.MapFrom(e => e.Id));         
 
             CreateMap<Supplier, SupplierDetailDto>()
                 .ForMember(m => m.City, c => c.MapFrom(e => e.Address.City))

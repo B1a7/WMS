@@ -1,23 +1,29 @@
-﻿using WMS.Models.Dtos.Product;
+﻿using IronBarCode;
+using System.Drawing;
+using WMS.Models.Dtos.Product;
 
 namespace WMS.Helpers
 {
     public static class QRHelper
     {
+        private static readonly string filePath;
 
-        public static string ProductQRToString(this ProductQRDto dto)
+        static QRHelper()
         {
-            var name = dto.Name != null ? dto.Name.ToString() : string.Empty;
-            var isAvaiable = dto.IsAvaiable != null ? dto.IsAvaiable.ToString() : "false" ;
-            var quantity = dto.Quantity != null ? dto.Quantity.ToString() : "0";
-            var supplier = dto.SupplierName != null ? dto.SupplierName.ToString() : string.Empty;
+            var rootPath = Directory.GetCurrentDirectory();
+            filePath = $"{rootPath}/ProductDocumentation/QRCode.png";
+        }
+        public static void GenerateQR(this string str)
+        {
+            var rootPath = Directory.GetCurrentDirectory();
+            var fileName = "QRCode.png";
+            var filePath = $"{rootPath}/ProductDocumentation/{fileName}";
 
-            var result = $"Name: {name}, " +
-                $"Is Avaiable: {isAvaiable}, " +
-                $"Quantity: {quantity}, " +
-                $" Supplier: {supplier}";
-
-            return result;
+            GeneratedBarcode barcode = QRCodeWriter.CreateQrCode(str, 250);
+            barcode.SetMargins(10);
+            barcode.AddAnnotationTextBelowBarcode(str);
+            barcode.ChangeBarCodeColor(Color.Black);
+            barcode.SaveAsPng(filePath);
         }
     }
 }

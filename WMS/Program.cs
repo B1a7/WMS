@@ -54,7 +54,7 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IQRCodeService, QRCodeService>();
+builder.Services.AddScoped<IDocumentationService, DocumentationService>();
 builder.Services.AddScoped<ILayoutService, LayoutService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
@@ -74,6 +74,8 @@ var scope = app.Services.CreateScope();
 var generator = scope.ServiceProvider.GetRequiredService<Seeder>();
 //generator.GenerateData();
 
+
+app.UseStaticFiles();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseMiddleware<RequestTimeMiddleware>();
 app.UseAuthentication();
