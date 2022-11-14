@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using WMS.Enums;
 using WMS.Exceptions;
 using WMS.ExtensionMethods;
 using WMS.Helpers;
@@ -57,6 +58,7 @@ namespace WMS.Services
 
             return result;
         }
+
         private (byte[], string, string) GenerateSupplierDoc(int id, string docType)
         {
             var supplier = _dbContext.Suppliers
@@ -77,27 +79,27 @@ namespace WMS.Services
 
         public (byte[], string, string) GenerateProductLabel(int id)
         {
-            var result = GenerateProductDoc(id, "Label");
+            var result = GenerateProductDoc(id, DocumentationEnum.Label.ToString());
             return result;
         }
 
         public (byte[], string, string) GenerateSupplierLabel(int id)
         {
-            var result = GenerateSupplierDoc(id, "Label");
+            var result = GenerateSupplierDoc(id, DocumentationEnum.Label.ToString());
 
             return result;
         }
 
         public (byte[], string, string) GenerateProductDocument(int id)
         {
-            var result = GenerateProductDoc(id, "ProductDocument");
+            var result = GenerateProductDoc(id, DocumentationEnum.ProductDocument.ToString());
 
             return result;
         }
 
         public (byte[], string, string) GenerateSupplierDocument(int id)
         {
-            var result = GenerateSupplierDoc(id, "SupplierDocument");
+            var result = GenerateSupplierDoc(id, DocumentationEnum.SupplierDocument.ToString());
 
             return result;
         }
@@ -107,7 +109,7 @@ namespace WMS.Services
             if (file == null)
                 throw new NotFoundException("File not found");
 
-            if (file.ContentType == "image/png" || file.ContentType == "image/jpg")
+            if (ImageFileContentType.ContentType.Contains(file.ContentType))
             {
                 var rootPath = Directory.GetCurrentDirectory();
                 var fileName = file.Name;

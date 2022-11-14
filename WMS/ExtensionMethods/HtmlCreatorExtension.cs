@@ -1,13 +1,13 @@
 ﻿using System.Text.RegularExpressions;
 using WMS.Models.Entities;
 
-namespace WMS.Helpers
+namespace WMS.ExtensionMethods
 {
-    public static class HtmlCreator
+    public static class HtmlCreatorExtension
     {
         private static readonly string rootPath;
 
-        static HtmlCreator()
+        static HtmlCreatorExtension()
         {
             rootPath = Directory.GetCurrentDirectory();
         }

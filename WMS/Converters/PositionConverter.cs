@@ -1,7 +1,7 @@
 ﻿using WMS.Exceptions;
 using WMS.Models.Dtos.Layout;
 
-namespace WMS.Helpers
+namespace WMS.Converters
 {
     public static class PositionConverter
     {
@@ -24,8 +24,8 @@ namespace WMS.Helpers
 
             if (!successfullyParsed)
                 throw new NotFoundException("Cannot convert position");
-           
-            var result = new Coordinates(x ,y, z);
+
+            var result = new Coordinates(x, y, z);
 
             return result;
         }

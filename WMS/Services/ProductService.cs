@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using WMS.Enums;
 using WMS.Exceptions;
+using WMS.Helpers;
 using WMS.Models;
 using WMS.Models.Dtos;
 using WMS.Models.Dtos.Product;
@@ -28,13 +29,14 @@ namespace WMS.Services
         private readonly WMSDbContext _dbContext;
         private readonly ILogger<ProductService> _logger;
         private readonly IMapper _mapper;
+        private readonly IProductHelper _productHelper;
 
-
-        public ProductService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper)
+        public ProductService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper, IProductHelper productHelper )
         {
             _dbContext = dbContext;
             _logger = logger;
             _mapper = mapper;
+            _productHelper = productHelper;
         }
 
 
@@ -52,7 +54,7 @@ namespace WMS.Services
         {
             _logger.LogError($"Product with id: {id} UPDATE action invoked");
 
-            var product = GetProduct(id);
+            var product = _productHelper.GetProduct(id);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
@@ -66,9 +68,7 @@ namespace WMS.Services
         
         public ProductDto ChangeStatus(int id, string newPackageStatus)
         {
-            var product = _dbContext.Products
-                    .Include(p => p.Statuses)
-                    .FirstOrDefault(p => p.Id == id);
+            var product = _productHelper.GetProduct(id);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
@@ -148,13 +148,7 @@ namespace WMS.Services
 
         public ProductDto GetById(int id)
         {
-            var product = _dbContext
-                .Products
-                .Include(p => p.Supplier)
-                .Include(p => p.Categories)
-                .Include(p => p.Statuses)
-                .Include(p => p.Layout)
-                .FirstOrDefault(p => p.Id == id);
+            var product = _productHelper.GetProduct(id);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
@@ -165,7 +159,7 @@ namespace WMS.Services
 
         public ProductDetailDto GetFullDetailsById(int id)
         {
-            var product = GetProduct(id);
+            var product = _productHelper.GetProduct(id);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
@@ -177,9 +171,8 @@ namespace WMS.Services
 
         public string GetPlacement(int id)
         {
-            var productPlacement = _dbContext.Products
-                .Include(p => p.Layout)
-                .FirstOrDefault(p => p.Id == id).Layout.PositionXYZ;
+            var productPlacement = _productHelper.GetProduct(id)
+                .Layout.PositionXYZ;
 
             if (productPlacement is null)
                 throw new NotFoundException("product is not in our Warehouse");
@@ -189,9 +182,7 @@ namespace WMS.Services
 
         public List<ProductStatusDto> GetProductHistory(int id)
         {
-            var statuses = _dbContext.Products
-                           .Include(p => p.Statuses)
-                           .FirstOrDefault(p => p.Id == id)
+            var statuses = _productHelper.GetProduct(id)
                            .Statuses;
 
             List<ProductStatusDto> result = new List<ProductStatusDto>(); 
@@ -207,22 +198,6 @@ namespace WMS.Services
             }
 
             return result;
-        }
-
-
-
-        //TODO: move it to extension helper class
-        public Product GetProduct(int id)
-        {
-            var product = _dbContext
-                .Products
-                .Include(p => p.Supplier)
-                .Include(p => p.Categories)
-                .Include(p => p.Statuses)
-                .Include(p => p.Layout)
-                .FirstOrDefault(p => p.Id == id);
-
-            return product;
         }
     }
 }

@@ -3,6 +3,7 @@
     public enum DocumentationEnum
     {
         Label,
-        Document
+        ProductDocument,
+        SupplierDocument
     }
 }
