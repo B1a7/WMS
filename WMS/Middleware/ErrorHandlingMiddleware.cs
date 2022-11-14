@@ -26,10 +26,15 @@ namespace WMS.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(badRequestException.Message);
             }
-            catch (NotAcceptable notAcceptable)
+            catch (NotAcceptableException notAcceptable)
             {
                 context.Response.StatusCode = 406;
                 await context.Response.WriteAsync(notAcceptable.Message);
+            }
+            catch (IncorrectInputException incorrect)
+            {
+                context.Response.StatusCode = 406;
+                await context.Response.WriteAsync(incorrect.Message);
             }
             catch (Exception ex)
             {

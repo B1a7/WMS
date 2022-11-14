@@ -43,14 +43,14 @@ namespace WMS.Helpers
         {
             var encodedQR = BarcodeReader.Read(fullPath);
             if (encodedQR == null)
-                throw new Exception("Cannot read QR code");
+                throw new IncorrectInputException("Cannot read QR code ");
 
             string[] subs = encodedQR.First().Value.Split(':');
             var type = subs.First();
             var isIdCorrect = Int32.TryParse(subs[1], out int typeId);
 
             if (!isIdCorrect)
-                throw new Exception("Cannot read QR code");
+                throw new IncorrectInputException("QrCode is not in our database");
 
             if (type == "Product")
             {
