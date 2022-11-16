@@ -9,15 +9,15 @@ namespace WMS.Controllers
 
 
 
-        [HttpGet("statuses")]
-        public ActionResult GetStatusesDiagram()
-        {
-        }
+        //[HttpGet("statuses")]
+        //public ActionResult GetStatusesDiagram()
+        //{
+        //}
 
-        [HttpGet("categories")]
-        public ActionResult GetCategoriesDiagram()
-        {
-        }
+        //[HttpGet("categories")]
+        //public ActionResult GetCategoriesDiagram()
+        //{
+        //}
 
 
 

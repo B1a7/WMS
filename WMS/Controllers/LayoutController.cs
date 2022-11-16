@@ -24,7 +24,7 @@ namespace WMS.Controllers
             return Ok(capacity);
         }
 
-        [HttpGet("detailCapacity/")]
+        [HttpGet("detailCapacity")]
         public ActionResult GetWarehouseDetailCapacity([FromBody] string size)
         {
             var detailCapacity = _layoutService.GetDetailCapacity(size);
@@ -48,7 +48,7 @@ namespace WMS.Controllers
             return Ok(detailfilling);
         }
 
-        [HttpGet("position/{id}")]
+        [HttpGet("product/{id}/placement")]
         public ActionResult GetPlacementProduct([FromRoute] int layoutId)
         {
             var product = _layoutService.GetPlacementProduct(layoutId);

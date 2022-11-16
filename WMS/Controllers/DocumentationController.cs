@@ -24,7 +24,7 @@ namespace WMS.Controllers
             return Ok(result);
         }
 
-        [HttpGet("label/product/{id}")]
+        [HttpGet("product/{id}/label")]
         public ActionResult GenerateProductLabel([FromRoute] int id)
         {
             var productQR = _documentationService.GenerateProductLabel(id);
@@ -33,7 +33,7 @@ namespace WMS.Controllers
         }
 
 
-        [HttpGet("document/product/{id}")]
+        [HttpGet("product/{id}/document")]
         public ActionResult GenerateProductDocument([FromRoute] int id)
         {
             var productDoc = _documentationService.GenerateProductDocument(id);
@@ -41,7 +41,7 @@ namespace WMS.Controllers
             return File(productDoc.Item1, productDoc.Item2, productDoc.Item3);
         }
 
-        [HttpGet("label/supplier/QR/{id}")]
+        [HttpGet("supplier/{id}/label")]
         public ActionResult GenerateSupplierLabel([FromRoute] int id)
         {
             var supplierQR = _documentationService.GenerateSupplierLabel(id);
@@ -49,7 +49,7 @@ namespace WMS.Controllers
             return File(supplierQR.Item1, supplierQR.Item2, supplierQR.Item3);
         }
 
-        [HttpGet("document/supplier/{id}")]
+        [HttpGet("supplier/{id}/document")]
         public ActionResult GenerateSupplierDocument([FromRoute] int id)
         {
             var supplierDoc = _documentationService.GenerateSupplierDocument(id);

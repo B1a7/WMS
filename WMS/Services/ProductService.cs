@@ -30,13 +30,16 @@ namespace WMS.Services
         private readonly ILogger<ProductService> _logger;
         private readonly IMapper _mapper;
         private readonly IProductHelper _productHelper;
+        private readonly IProductPlacementHelper _productPlacementHelper;
 
-        public ProductService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper, IProductHelper productHelper )
+        public ProductService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper, IProductHelper productHelper,
+            IProductPlacementHelper productPlacementHelper)
         {
             _dbContext = dbContext;
             _logger = logger;
             _mapper = mapper;
             _productHelper = productHelper;
+            _productPlacementHelper = productPlacementHelper;
         }
 
 
@@ -52,7 +55,6 @@ namespace WMS.Services
 
         public void Update(int id, UpdateProductDto dto)
         {
-            _logger.LogError($"Product with id: {id} UPDATE action invoked");
 
             var product = _productHelper.GetProduct(id);
 
@@ -71,15 +73,23 @@ namespace WMS.Services
             var product = _productHelper.GetProduct(id);
 
             if (product is null)
-                throw new NotFoundException("Product not found");
-            if (!PackageStatus.PackageStatuses.Contains(newPackageStatus.ToLower()))
+                throw new NotFoundException($"Product with id {id} not found");
+            
+            var newPackageStatusEnum = PackageStatus.PackageStatuses
+                .FirstOrDefault(s => s.Equals(newPackageStatus));
+
+            if (newPackageStatusEnum == null)
                 throw new BadRequestException($"Status can be only :{PackageStatus.PackageStatuses.ToString()}");
+           
             if (product.Statuses != null)
                 product.Statuses.ForEach(s => s.IsActive = false);
+                      
+            _productPlacementHelper.ModifyProductPlacement(product, newPackageStatusEnum);      
 
             var newStatus = new Status()
             {
                 IsActive = true,
+                DateStatus = DateTime.Now,
                 PackageStatus = newPackageStatus,
                 ProductId = id
             };

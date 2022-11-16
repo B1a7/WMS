@@ -55,7 +55,7 @@ namespace WMS.Controllers
             return Ok(customer);
         }
 
-        [HttpGet("products/{id}")]
+        [HttpGet("{id}/products")]
         public ActionResult GetSupplierProducts([FromRoute] int id)
         {
             var supplierProductsDto = _customerService.GetSupplierProducts(id);

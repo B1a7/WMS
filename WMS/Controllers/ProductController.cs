@@ -37,7 +37,7 @@ namespace WMS.Controllers
             return Ok();
         }
 
-        [HttpPut("changestatus/{id}")]
+        [HttpPut("{id}/changestatus")]
         public ActionResult ChangeStatus([FromRoute] int id, [FromBody] string newPackageStatus)
         {
             var product = _productService.ChangeStatus(id, newPackageStatus);
@@ -69,7 +69,7 @@ namespace WMS.Controllers
             return Ok(product);
         }
 
-        [HttpGet("detail/{id}")]
+        [HttpGet("{id}/detail")]
         public ActionResult<ProductDetailDto> GetFullDetailsById([FromRoute] int id)
         {
             var product = _productService.GetFullDetailsById(id);
@@ -77,7 +77,7 @@ namespace WMS.Controllers
             return Ok(product);
         }
 
-        [HttpGet("placement/{id}")]
+        [HttpGet("{id}/placement")]
         public ActionResult GetPlacement([FromRoute] int id)
         {
             var placement = _productService.GetPlacement(id);
@@ -85,7 +85,7 @@ namespace WMS.Controllers
             return Ok(placement);
         }
 
-        [HttpGet("history/{id}")]
+        [HttpGet("{id}/history")]
         public ActionResult GetProductHistory([FromRoute] int id)
         {
             var statusList = _productService.GetProductHistory(id);

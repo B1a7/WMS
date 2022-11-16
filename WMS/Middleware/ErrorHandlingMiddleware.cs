@@ -36,6 +36,11 @@ namespace WMS.Middleware
                 context.Response.StatusCode = 406;
                 await context.Response.WriteAsync(incorrect.Message);
             }
+            catch (NoEmptySpotException noEmptySpot)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(noEmptySpot.Message);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
