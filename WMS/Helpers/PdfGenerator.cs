@@ -2,23 +2,28 @@
 using IronPdf;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using WMS.Enums;
 using WMS.Exceptions;
+using WMS.ExtensionMethods;
 using WMS.Models;
+using WMS.Models.Entities;
 
 namespace WMS.Helpers
 {
-    public interface IPdfHepler
+    public interface IPdfGenerator
     {
-        (byte[], string, string) GetDocumentation (string pdfName);
+        (byte[], string, string) GetDocumentation (EntityBase entity, DocumentTypesEnum docEnum);
     }
 
-    public class PdfHepler : IPdfHepler
+    public class PdfGenerator : IPdfGenerator
     {
         private readonly string rootPath;
+        private readonly IQRHelper _qRHelper;
 
-        public PdfHepler()
+        public PdfGenerator(IQRHelper qRHelper)
         {
             rootPath = Directory.GetCurrentDirectory();
+            _qRHelper = qRHelper;
         }
 
         private (byte[], string, string) GeneratePdf(string fileName, string filePath, string content)
@@ -36,24 +41,21 @@ namespace WMS.Helpers
             return (fileContent, contentType, fileName);
         }
 
-        private string GetHtmlSchema(string fileName)
+
+        public (byte[], string, string) GetDocumentation(EntityBase entity, DocumentTypesEnum docEnum)
         {
+            var fileName = $"{entity.GetFileName(docEnum)}.pdf";
             var filePath = $"{rootPath}/Documentation/{fileName}";
 
-            string html = File.ReadAllText(filePath);
-            return html;
-        }
+            //Generate QR code
+            string dataQrString = entity.ToQrString();
+            _qRHelper.GenerateQR(dataQrString);
 
-        public (byte[], string, string) GetDocumentation(string pdfName)
-        {
-            var fileName = $"{pdfName}.pdf";
-            var filePath = $"{rootPath}/Documentation/{fileName}";
-
-            var htmlFile = $"{pdfName}.html";
-
-            var content = GetHtmlSchema(htmlFile);
+            //Generate HTML to convert it to the PDF
+            var content = entity.GenerateHTML(docEnum);
 
             var result = GeneratePdf(fileName, filePath, content);
+
             return result;
         }
     }

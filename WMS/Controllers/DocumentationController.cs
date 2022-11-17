@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WMS.Models.Entities;
 using WMS.Services;
 
 namespace WMS.Controllers
@@ -16,7 +17,7 @@ namespace WMS.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("scanqr")]
         public ActionResult ScanQrCode(IFormFile file)
         {
             var result = _documentationService.ScanQrCode(file);
@@ -24,39 +25,21 @@ namespace WMS.Controllers
             return Ok(result);
         }
 
-        [HttpGet("product/{id}/label")]
-        public ActionResult GenerateProductLabel([FromRoute] int id)
+        [HttpGet("supplier/{id}/{docType}")]
+        public ActionResult GenerateSupplierDocumentation([FromRoute] int id, [FromRoute] string docType)
         {
-            var productQR = _documentationService.GenerateProductLabel(id);
+            var productQR = _documentationService.GenerateDocumentation<Supplier>(id, docType);
 
             return File(productQR.Item1, productQR.Item2, productQR.Item3);
         }
 
-
-        [HttpGet("product/{id}/document")]
-        public ActionResult GenerateProductDocument([FromRoute] int id)
+        [HttpGet("product/{id}/{docType}")]
+        public ActionResult GenerateDocumentation([FromRoute] int id, [FromRoute] string docType)
         {
-            var productDoc = _documentationService.GenerateProductDocument(id);
+            var productQR = _documentationService.GenerateDocumentation<Product>(id, docType);
 
-            return File(productDoc.Item1, productDoc.Item2, productDoc.Item3);
+            return File(productQR.Item1, productQR.Item2, productQR.Item3);
         }
-
-        [HttpGet("supplier/{id}/label")]
-        public ActionResult GenerateSupplierLabel([FromRoute] int id)
-        {
-            var supplierQR = _documentationService.GenerateSupplierLabel(id);
-
-            return File(supplierQR.Item1, supplierQR.Item2, supplierQR.Item3);
-        }
-
-        [HttpGet("supplier/{id}/document")]
-        public ActionResult GenerateSupplierDocument([FromRoute] int id)
-        {
-            var supplierDoc = _documentationService.GenerateSupplierDocument(id);
-
-            return File(supplierDoc.Item1, supplierDoc.Item2, supplierDoc.Item3);
-        }
-
 
     }
 }

@@ -60,10 +60,10 @@ builder.Services.AddScoped<ILayoutService, LayoutService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IValidator<ProductQuery>, ProductQueryValidatior>();
-builder.Services.AddScoped<IPdfHepler,PdfHepler>();
+builder.Services.AddScoped<IQRHelper, QRHelper>();
+builder.Services.AddScoped<IPdfGenerator,PdfGenerator>();
 builder.Services.AddScoped<IProductHelper, ProductHelper>();
 builder.Services.AddScoped<IProductPlacementHelper, ProductPlacementHelper>();
-builder.Services.AddScoped<IQRHelper, QRHelper>();
 
 var app = builder.Build();
 

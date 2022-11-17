@@ -53,8 +53,4 @@
     <PackageReference Include="ZXing.Net.Bindings.ZKWeb.System.Drawing" Version="0.16.6" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\Dtos\Graph\" />
-  </ItemGroup>
-
 </Project>

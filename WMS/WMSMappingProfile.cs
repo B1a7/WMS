@@ -26,9 +26,6 @@ namespace WMS
                 .ForMember(m => m.CategoryHSCode, c => c.MapFrom(e => e.Categories.Select(x => x.HSCode).ToList()))
                 .ForMember(m => m.Position, c => c.MapFrom(e => e.Layout.PositionXYZ));
 
-            CreateMap<Product, ProductQrDto>()
-                .ForMember(m => m.ProductId, c => c.MapFrom(e => e.Id));
-
             CreateMap<AddProductDto, Product>()
                 .ForMember(m => m.Categories, c => c.MapFrom(dto => new List<Category>(){
                     new Category() { Name = dto.CategoryName, HSCode = dto.HSCode} }))
@@ -45,9 +42,6 @@ namespace WMS
             CreateMap<Supplier, SupplierDto>();
 
             CreateMap<Supplier, SupplierScanQrDto>();
-
-            CreateMap<Supplier, SupplierQrDto>()
-                .ForMember(m => m.SupplierId, c => c.MapFrom(e => e.Id));         
 
             CreateMap<Supplier, SupplierDetailDto>()
                 .ForMember(m => m.City, c => c.MapFrom(e => e.Address.City))
