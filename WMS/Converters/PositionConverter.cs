@@ -23,7 +23,7 @@ namespace WMS.Converters
             successfullyParsed = successfullyParsed & int.TryParse(splitted[2], out z);
 
             if (!successfullyParsed)
-                throw new NotFoundException("Cannot convert position");
+                throw new ConverterException("Cannot convert position");
 
             var result = new Coordinates(x, y, z);
 
