@@ -77,7 +77,7 @@ if (!app.Environment.IsDevelopment())
 
 var scope = app.Services.CreateScope();
 var generator = scope.ServiceProvider.GetRequiredService<Seeder>();
-//generator.GenerateData();
+generator.GenerateData();
 
 
 app.UseStaticFiles();

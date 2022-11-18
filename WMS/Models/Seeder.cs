@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using WMS.Models.Entities;
 using WMS.ExtensionMethods;
+using Microsoft.EntityFrameworkCore;
 
 namespace WMS.Models
 {
@@ -15,9 +16,11 @@ namespace WMS.Models
 
         public void GenerateData()
         {
-            if (_dbContext.Database.CanConnect())
+            if (_dbContext.Database.CanConnect() && _dbContext.Suppliers.Count() == 0)
             {
-                Randomizer.Seed = new Random(911);
+                TrunkateDatabase();
+
+                #region Roles 
 
                 if (!_dbContext.Roles.Any())
                 {
@@ -26,53 +29,126 @@ namespace WMS.Models
                     _dbContext.SaveChanges();
                 }
 
+                #endregion
+
+                #region Addresses
+
                 var addressGenerator = new Faker<Address>()
                     .RuleFor(a => a.City, f => f.Address.City())
                     .RuleFor(a => a.Street, f => f.Address.StreetName())
                     .RuleFor(a => a.PostalCode, f => f.Address.ZipCode())
                     .RuleFor(a => a.Country, f => f.Address.Country());
 
+                #endregion
 
+                #region Categories
+
+                var categories = new[] { "Arts", "Automotive", "Computers", "Electronics", "Garden", "Grocery",
+                    "Movies", "Toys", "Home", "Kitchen", "Office"};
                 var categoryGenerator = new Faker<Category>()
                     .RuleFor(c => c.Name, f => f.Commerce.Color())
                     .RuleFor(c => c.HSCode, f => f.Commerce.Ean8());
 
+                #endregion
+
+                #region Statuses
 
                 var statuses = new[] { "out of warehouse", "delivered", "placed in warehouse", "sent" };
-                var statusGenerator = new Faker<Status>()
-                    .RuleFor(s => s.IsActive, f => f.Random.Bool())
+
+                var statusInactiveGenerator = new Faker<Status>()
+                    .RuleFor(s => s.IsActive, f => false)
                     .RuleFor(s => s.PackageStatus, f => f.PickRandom(statuses));
 
-                var random = new Random();
+                var statusActiveGenerator = new Faker<Status>()
+                    .RuleFor(s => s.IsActive, f => true)
+                    .RuleFor(s => s.PackageStatus, f => f.PickRandom(statuses));
+
+                #endregion
+
+                #region Layouts
+
                 var spotSizes = new[] { "small", "medium", "large" };
-                var layoutsGenerator = new Faker<Layout>()
-                    .RuleFor(l => l.SpotSize, f => f.PickRandom(spotSizes))
-                    .RuleFor(l => l.PositionXYZ, f => $"{random.Next(1,10)}.{random.Next(1, 10)}.1");
 
+                List<Layout> layouts = new List<Layout>();
 
-                var sizes = new[] { "small", "medium", "large" };
+                for (int i = 1; i <= 4; i++)
+                {
+                    for (int j = 1; j <= 20; j++)
+                    {
+                        for (int k = 1; k <= 10; k++)
+                        {
+                            var layoutsGenerator = new Faker<Layout>()
+                                .RuleFor(l => l.SpotSize, f => f.PickRandom(spotSizes))
+                                .RuleFor(l => l.PositionXYZ, f => $"{k}.{j}.{i}");
+                            layouts.Add(layoutsGenerator.Generate());
+                        }
+                    }
+                }
+
+                _dbContext.Layouts.AddRange(layouts);
+                #endregion
+
+                #region Products
+
+                var layoutId = 0;
+
                 var productGenerator = new Faker<Product>()
                     .RuleFor(p => p.Name, f => f.Commerce.ProductName())
                     .RuleFor(p => p.Quantity, f => f.PickRandom(1, 10))
                     .RuleFor(p => p.IsAvaiable, f => f.Random.Bool())
                     .RuleFor(p => p.ProductionDate, f => DateTime.Now)
-                    .RuleFor(p => p.Size, f => f.PickRandom(sizes))
-                    .RuleFor(p => p.Layout, f => layoutsGenerator.Generate())
-                    .RuleFor(p => p.Categories, f => categoryGenerator.Generate(5))
-                    .RuleFor(p => p.Statuses, f => statusGenerator.Generate(2));
+                    .RuleFor(p => p.Layout, f => layouts[layoutId])
+                    .RuleFor(p => p.Size, f => layouts[layoutId++].SpotSize)
+                    .RuleFor(p => p.Categories, f => categoryGenerator.Generate(4))
+                    .RuleFor(p => p.Statuses, f => new List<Status>(){
+                        statusInactiveGenerator.Generate(),
+                        statusInactiveGenerator.Generate(),
+                        statusActiveGenerator.Generate()
+                    });
+
+                #endregion
+
+                #region Suppliers
 
                 var supplierGenerator = new Faker<Supplier>()
                     .RuleFor(s => s.Name, f => f.Name.FullName())
                     .RuleFor(s => s.Email, f => f.Internet.Email())
                     .RuleFor(s => s.PhoneNumber, f => f.Phone.PhoneNumber())
                     .RuleFor(s => s.Address, f => addressGenerator.Generate())
-                    .RuleFor(s => s.Products, f => productGenerator.Generate(20));
+                    .RuleFor(s => s.Products, f => productGenerator.Generate(5));
 
-                var supplier = supplierGenerator.Generate(20);
+                var supplier = supplierGenerator.Generate(100);
+
+                #endregion
+
 
                 _dbContext.AddRange(supplier);
                 _dbContext.SaveChanges();
             } 
+        }
+
+        private void TrunkateDatabase()
+        {
+            //var roles = _dbContext.Roles.ToList();
+            //_dbContext.Roles.RemoveRange(roles);
+            
+            //var users = _dbContext.Users.ToList();
+            //_dbContext.Users.RemoveRange(users);
+
+            //var statuses = _dbContext.Statuses.ToList();
+            //_dbContext.Statuses.RemoveRange(statuses);
+
+            //var address = _dbContext.Addresses.ToList();
+            //_dbContext.Addresses.RemoveRange(address);
+
+            //var categories = _dbContext.Categories.ToList();
+            //_dbContext.Categories.RemoveRange(categories);
+
+            //var products = _dbContext.Products.ToList();
+            //_dbContext.Products.RemoveRange(products);
+
+            //var layouts = _dbContext.Layouts.ToList();
+            //_dbContext.Layouts.RemoveRange(layouts);
         }
 
         private IEnumerable<Role> GetRoles()
@@ -102,6 +178,8 @@ namespace WMS.Models
             };
             return statuses;
         }
+
+
 
     }
 }
