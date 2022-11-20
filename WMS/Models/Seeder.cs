@@ -18,7 +18,7 @@ namespace WMS.Models
         {
             if (_dbContext.Database.CanConnect() && _dbContext.Suppliers.Count() == 0)
             {
-                TrunkateDatabase();
+                //TrunkateDatabase();
 
                 #region Roles 
 

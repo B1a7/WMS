@@ -16,7 +16,7 @@ namespace WMS.Services
 {
     public interface IAccountService
     {
-        void RegisterUser(RegisterUserDto dto);
+        void RegisterUser(RegisterUserDto dto, string loggedUserId);
         string GenerateJwt(LoginDto dto);
     }
 
@@ -36,7 +36,7 @@ namespace WMS.Services
             _authenticationSettings = authenticationSettings;
             _journalHelper = journalHelper;
         }
-        public void RegisterUser(RegisterUserDto dto)
+        public void RegisterUser(RegisterUserDto dto, string loggedUserId)
         {
             var newUser = new User()
             {
@@ -51,9 +51,8 @@ namespace WMS.Services
 
 
             _context.Users.Add(newUser);
-            //_journalHelper.CreateJournal(OperationTypeEnum.Register, typeof(User).ToString(), newUser.Id);
             _context.SaveChanges();
-
+            _journalHelper.CreateJournal(OperationTypeEnum.Add, newUser.GetType().Name.ToString(), newUser.Id, loggedUserId);
         }
 
         public string GenerateJwt(LoginDto dto)

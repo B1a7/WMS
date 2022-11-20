@@ -31,10 +31,11 @@ namespace WMS.Helpers
                 OperationType = type.ToString(),
                 OperationTarget = operationTarget,
                 TargetId = operationId,
-                UserId = userId
-                };
+                UserId = userId != null ? userId : string.Empty
+            };
 
-                _dbContext.Add(journal);
+            _dbContext.Add(journal);
+            _dbContext.SaveChanges();
         }
 
     }

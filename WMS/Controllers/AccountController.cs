@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WMS.Models.Dtos.AccountDtos;
 using WMS.Services;
 
@@ -17,7 +18,9 @@ namespace WMS.Controllers
         [HttpPost("register")]
         public ActionResult RegisterUser([FromBody] RegisterUserDto dto)
         {
-            _accountService.RegisterUser(dto);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            _accountService.RegisterUser(dto, loggedUserId);
             return Ok();
         }
 

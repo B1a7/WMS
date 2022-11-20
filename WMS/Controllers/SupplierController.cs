@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WMS.Models.Dtos.SupplierDtos;
 using WMS.Services;
 
@@ -19,7 +20,9 @@ namespace WMS.Controllers
         [HttpPost]
         public ActionResult AddSupplier([FromBody] AddSupplierDto dto)
         {
-            var id = _supplierService.AddSupplier(dto);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var id = _supplierService.AddSupplier(dto, loggedUserId);
 
             return Created($"/api/customer/{id}", null);
         }
@@ -27,7 +30,9 @@ namespace WMS.Controllers
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] UpdateSupplierDto dto, [FromRoute] int id)
         {
-            _supplierService.Update(dto, id);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            _supplierService.Update(dto, id, loggedUserId);
 
             return Ok();
         }
@@ -35,7 +40,9 @@ namespace WMS.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
-            _supplierService.Delete(id);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            _supplierService.Delete(id, loggedUserId);
 
             return NoContent();
         }

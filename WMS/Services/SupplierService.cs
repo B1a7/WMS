@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using WMS.Enums;
 using WMS.Exceptions;
+using WMS.Helpers;
 using WMS.Models;
 using WMS.Models.Dtos;
 using WMS.Models.Dtos.SupplierDtos;
@@ -12,9 +13,9 @@ namespace WMS.Services
 {
     public interface ISupplierService
     {
-        int AddSupplier(AddSupplierDto dto);
-        void Update(UpdateSupplierDto dto, int id);
-        void Delete(int id);
+        int AddSupplier(AddSupplierDto dto, string loggedUserId);
+        void Update(UpdateSupplierDto dto, int id, string loggedUserId);
+        void Delete(int id, string loggedUserId);
         PagedResult<SupplierDto> GetAll(SupplierQuery query);
         SupplierDetailDto GetById(int id);
         List<SupplierProductDto> GetSupplierProducts(int id);
@@ -25,27 +26,29 @@ namespace WMS.Services
         private readonly WMSDbContext _dbContext;
         private readonly ILogger<ProductService> _logger;
         private readonly IMapper _mapper;
+        private readonly IJournalHelper _journalHepler;
 
-
-        public SupplierService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper)
+        public SupplierService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper, IJournalHelper journalHelper)
         {
             _dbContext = dbContext;
             _logger = logger;
             _mapper = mapper;
+            _journalHepler = journalHelper;
         }
 
 
-        public int AddSupplier(AddSupplierDto dto)
+        public int AddSupplier(AddSupplierDto dto, string loggedUserId)
         {
             var supplier = _mapper.Map<Supplier>(dto);
 
             _dbContext.Suppliers.Add(supplier);
             _dbContext.SaveChanges();
+            _journalHepler.CreateJournal(OperationTypeEnum.Add, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
 
             return supplier.Id;
         }
 
-        public void Update(UpdateSupplierDto dto, int id)
+        public void Update(UpdateSupplierDto dto, int id, string loggedUserId)
         {
             _logger.LogError($"Supplier with id: {id} UPDATE action invoked");
 
@@ -65,9 +68,11 @@ namespace WMS.Services
             supplier.Address.PostalCode = dto.PostalCode;
 
             _dbContext.SaveChanges();
+            _journalHepler.CreateJournal(OperationTypeEnum.Add, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
+
         }
 
-        public void Delete(int id)
+        public void Delete(int id, string loggedUserId)
         {
             _logger.LogError($"Supplier with id: {id} DELETE action invoked");
 
@@ -79,6 +84,8 @@ namespace WMS.Services
 
             _dbContext.Suppliers.Remove(supplier);
             _dbContext.SaveChanges();
+            _journalHepler.CreateJournal(OperationTypeEnum.Add, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
+
         }
 
         public PagedResult<SupplierDto> GetAll(SupplierQuery query)

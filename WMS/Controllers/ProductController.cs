@@ -25,9 +25,9 @@ namespace WMS.Controllers
         [HttpPost]
         public ActionResult AddProduct([FromBody] AddProductDto dto)
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var id = _productService.AddProduct(dto, userId);
+            var id = _productService.AddProduct(dto, loggedUserId);
 
             return Created($"/api/product/{id}", null);
         }
@@ -35,9 +35,9 @@ namespace WMS.Controllers
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] UpdateProductDto dto, [FromRoute]int id)
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _productService.Update(id, dto, userId);
+            _productService.Update(id, dto, loggedUserId);
 
             return Ok();
         }
@@ -45,9 +45,9 @@ namespace WMS.Controllers
         [HttpPut("{id}/changestatus")]
         public ActionResult ChangeStatus([FromRoute] int id, [FromBody] string newPackageStatus)
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var product = _productService.ChangeStatus(id, newPackageStatus, userId);
+            var product = _productService.ChangeStatus(id, newPackageStatus, loggedUserId);
 
             return Ok(product);
         }
@@ -55,9 +55,9 @@ namespace WMS.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _productService.Delete(id, userId);
+            _productService.Delete(id, loggedUserId);
 
             return NoContent();
         }
