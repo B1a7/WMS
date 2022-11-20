@@ -6,7 +6,7 @@ using WMS.Exceptions;
 using WMS.Helpers;
 using WMS.Models;
 using WMS.Models.Dtos;
-using WMS.Models.Dtos.Product;
+using WMS.Models.Dtos.ProductDtos;
 using WMS.Models.Entities;
 
 namespace WMS.Services
@@ -46,7 +46,7 @@ namespace WMS.Services
         public int AddProduct( AddProductDto dto)
         {
             var newProduct = _mapper.Map<Product>(dto);
-
+                
             _dbContext.Products.Add(newProduct);
             _dbContext.SaveChanges();
 
@@ -125,8 +125,11 @@ namespace WMS.Services
                 .Include(p => p.Statuses)
                 .Include(p => p.Layout)
                 .Where(p => query.SearchPhrase == null || (p.Name.ToLower().Contains(query.SearchPhrase.ToLower())
-                            || p.Statuses.Where(s => s.IsActive).FirstOrDefault().PackageStatus.ToLower()
-                                .Contains(query.SearchPhrase.ToLower())));
+                       || p.Statuses.FirstOrDefault(s => s.IsActive).PackageStatus.ToLower()
+                                .Contains(query.SearchPhrase.ToLower())
+                       || p.Quantity.ToString().Contains(query.SearchPhrase)
+                       || p.Size.ToString().Contains(query.SearchPhrase)));
+
 
             if (!string.IsNullOrEmpty(query.SortBy))
             {

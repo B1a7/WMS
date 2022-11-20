@@ -3,9 +3,9 @@
     public static class SpotSize
     {
         public static List<string> SpotSizes { get; }
-        public static string Small { get { return "Small"; } }
-        public static string Medium { get { return "Medium"; } }
-        public static string Large { get { return "Large"; } }
+        public static string Small { get { return "small"; } }
+        public static string Medium { get { return "medium"; } }
+        public static string Large { get { return "large"; } }
 
         static SpotSize()
         {

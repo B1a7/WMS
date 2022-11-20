@@ -44,7 +44,7 @@ namespace WMS.Services
         public int GetDetailCapacity(string size)
         {
             if (!SpotSize.SpotSizes.Contains(size.ToLower()))
-                throw new BadRequestException("Wrong size name");
+                throw new BadRequestException($"Wrong size name pick one of {SpotSize.SpotSizes.ToList()}");
 
             var capacity = _dbContext.Layouts
                 .Where(l => l.SpotSize == size)
