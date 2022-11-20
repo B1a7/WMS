@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WMS.Models.Dtos.Account;
+using WMS.Models.Dtos.AccountDtos;
 using WMS.Services;
 
 namespace WMS.Controllers

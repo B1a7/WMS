@@ -127,29 +127,10 @@ namespace WMS.Models
             } 
         }
 
-        private void TrunkateDatabase()
-        {
-            //var roles = _dbContext.Roles.ToList();
-            //_dbContext.Roles.RemoveRange(roles);
-            
-            //var users = _dbContext.Users.ToList();
-            //_dbContext.Users.RemoveRange(users);
-
-            //var statuses = _dbContext.Statuses.ToList();
-            //_dbContext.Statuses.RemoveRange(statuses);
-
-            //var address = _dbContext.Addresses.ToList();
-            //_dbContext.Addresses.RemoveRange(address);
-
-            //var categories = _dbContext.Categories.ToList();
-            //_dbContext.Categories.RemoveRange(categories);
-
-            //var products = _dbContext.Products.ToList();
-            //_dbContext.Products.RemoveRange(products);
-
-            //var layouts = _dbContext.Layouts.ToList();
-            //_dbContext.Layouts.RemoveRange(layouts);
-        }
+        //TODO
+        //private void TrunkateDatabase()
+        //{
+        //}
 
         private IEnumerable<Role> GetRoles()
         {

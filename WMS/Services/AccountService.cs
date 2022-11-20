@@ -4,10 +4,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using WMS.Enums;
 using WMS.Exceptions;
+using WMS.Helpers;
 using WMS.Middleware;
 using WMS.Models;
-using WMS.Models.Dtos.Account;
+using WMS.Models.Dtos.AccountDtos;
 using WMS.Models.Entities;
 
 namespace WMS.Services
@@ -24,12 +26,15 @@ namespace WMS.Services
         private readonly WMSDbContext _context;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly AuthenticationSettings _authenticationSettings;
+        private readonly IJournalHelper _journalHelper;
 
-        public AccountService(WMSDbContext context, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings)
+        public AccountService(WMSDbContext context, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings,
+            IJournalHelper journalHelper)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _authenticationSettings = authenticationSettings;
+            _journalHelper = journalHelper;
         }
         public void RegisterUser(RegisterUserDto dto)
         {
@@ -44,8 +49,11 @@ namespace WMS.Services
             var hashedPassword = _passwordHasher.HashPassword(newUser, dto.Password);
             newUser.PasswordHash = hashedPassword;
 
+
             _context.Users.Add(newUser);
+            //_journalHelper.CreateJournal(OperationTypeEnum.Register, typeof(User).ToString(), newUser.Id);
             _context.SaveChanges();
+
         }
 
         public string GenerateJwt(LoginDto dto)

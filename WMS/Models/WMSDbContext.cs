@@ -13,6 +13,7 @@ namespace WMS.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Layout> Layouts { get; set; }
+        public DbSet<Journal> Journals { get; set; }
 
 
         public WMSDbContext(DbContextOptions<WMSDbContext> options) : base(options)

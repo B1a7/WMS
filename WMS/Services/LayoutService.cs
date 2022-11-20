@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using WMS.Enums;
 using WMS.Models;
-using WMS.Models.Dtos.Product;
-using WMS.Models.Dtos.Layout;
 using Microsoft.EntityFrameworkCore;
 using WMS.Exceptions;
 using WMS.Converters;
+using WMS.Models.Dtos.ProductDtos;
+using WMS.Models.Dtos.LayoutDtos;
 
 namespace WMS.Services
 {

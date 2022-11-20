@@ -43,24 +43,30 @@ builder.Services.AddAuthentication(option =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSetttings.JwtKey)),
     };
 });
+builder.Services.AddAuthorization();
 
 builder.Logging.ClearProviders();
 builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
 builder.Host.UseNLog();
-builder.Services.AddControllers().AddFluentValidation(); ;
+builder.Services.AddControllers().AddFluentValidation();
+
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<RequestTimeMiddleware>();
+
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<WMSDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("WMSConnection")));
 builder.Services.AddScoped<Seeder>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IDocumentationService, DocumentationService>();
 builder.Services.AddScoped<ILayoutService, LayoutService>();
+
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IValidator<AddProductDto>, AddProductDtoValidator>();
 builder.Services.AddScoped<IValidator<ProductQuery>, ProductQueryValidatior>();
@@ -69,6 +75,7 @@ builder.Services.AddScoped<IValidator<SupplierQuery>, SupplierQueryValidator>();
 builder.Services.AddScoped<IValidator<AddSupplierDto>, AddSupplierDtoValidator>();
 builder.Services.AddScoped<IValidator<UpdateSupplierDto>, AddSupplierDtoValidator>();
 
+builder.Services.AddScoped<IJournalHelper, JournalHelper>();
 builder.Services.AddScoped<IQRHelper, QRHelper>();
 builder.Services.AddScoped<IPdfGenerator,PdfGenerator>();
 builder.Services.AddScoped<IProductHelper, ProductHelper>();
@@ -86,7 +93,7 @@ if (!app.Environment.IsDevelopment())
 
 var scope = app.Services.CreateScope();
 var generator = scope.ServiceProvider.GetRequiredService<Seeder>();
-generator.GenerateData();
+//generator.GenerateData();
 
 
 app.UseStaticFiles();

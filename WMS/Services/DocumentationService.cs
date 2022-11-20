@@ -4,7 +4,7 @@ using WMS.Exceptions;
 using WMS.ExtensionMethods;
 using WMS.Helpers;
 using WMS.Models;
-using WMS.Models.Dtos.Documentation;
+using WMS.Models.Dtos.DocumentationDtos;
 using WMS.Models.Entities;
 
 namespace WMS.Services

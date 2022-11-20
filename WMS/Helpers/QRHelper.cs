@@ -3,8 +3,8 @@ using IronBarCode;
 using System.Drawing;
 using WMS.Exceptions;
 using WMS.Models;
-using WMS.Models.Dtos.Documentation;
-using WMS.Models.Dtos.Product;
+using WMS.Models.Dtos.DocumentationDtos;
+using WMS.Models.Dtos.ProductDtos;
 
 namespace WMS.Helpers
 {

@@ -13,14 +13,14 @@ namespace WMS.Services
 {
     public interface IProductService
     {
-        int AddProduct(AddProductDto dto);
+        int AddProduct(AddProductDto dto, string userId);
         ProductDto GetById(int id);
-        void Delete(int id);
-        void Update(int id, UpdateProductDto dto);
+        void Delete(int id, string userId);
+        void Update(int id, UpdateProductDto dto, string userId);
         PagedResult<ProductDto> GetAll(ProductQuery query);
         ProductDetailDto GetFullDetailsById(int id);
         string GetPlacement(int id);
-        ProductDto ChangeStatus(int id, string newPackageStatus);
+        ProductDto ChangeStatus(int id, string newPackageStatus, string userId);
         List<ProductStatusDto> GetProductHistory(int id);
     }
 
@@ -31,29 +31,33 @@ namespace WMS.Services
         private readonly IMapper _mapper;
         private readonly IProductHelper _productHelper;
         private readonly IProductPlacementHelper _productPlacementHelper;
+        private readonly IJournalHelper _journalHelper;
 
         public ProductService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper, IProductHelper productHelper,
-            IProductPlacementHelper productPlacementHelper)
+            IProductPlacementHelper productPlacementHelper, IJournalHelper journalHelper)
         {
             _dbContext = dbContext;
             _logger = logger;
             _mapper = mapper;
             _productHelper = productHelper;
             _productPlacementHelper = productPlacementHelper;
+            _journalHelper = journalHelper;
         }
 
 
-        public int AddProduct( AddProductDto dto)
+        public int AddProduct( AddProductDto dto, string userId)
         {
             var newProduct = _mapper.Map<Product>(dto);
-                
+
+            _journalHelper.CreateJournal(OperationTypeEnum.Add, newProduct.GetType().ToString(), newProduct.Id, userId);
+
             _dbContext.Products.Add(newProduct);
             _dbContext.SaveChanges();
 
             return newProduct.Id;
         }
 
-        public void Update(int id, UpdateProductDto dto)
+        public void Update(int id, UpdateProductDto dto, string userId)
         {
 
             var product = _productHelper.GetProduct(id);
@@ -68,7 +72,7 @@ namespace WMS.Services
             _dbContext.SaveChanges();
         }
         
-        public ProductDto ChangeStatus(int id, string newPackageStatus)
+        public ProductDto ChangeStatus(int id, string newPackageStatus, string userId)
         {
             var product = _productHelper.GetProduct(id);
 
@@ -102,7 +106,7 @@ namespace WMS.Services
             return result;
         }
 
-        public void Delete(int id)
+        public void Delete(int id, string userId)
         {
             _logger.LogError($"Product with id: {id} DELETE action invoked");
 
