@@ -68,7 +68,7 @@ namespace WMS.Services
             supplier.Address.PostalCode = dto.PostalCode;
 
             _dbContext.SaveChanges();
-            _journalHepler.CreateJournal(OperationTypeEnum.Add, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
+            _journalHepler.CreateJournal(OperationTypeEnum.Update, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
 
         }
 
@@ -84,7 +84,7 @@ namespace WMS.Services
 
             _dbContext.Suppliers.Remove(supplier);
             _dbContext.SaveChanges();
-            _journalHepler.CreateJournal(OperationTypeEnum.Add, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
+            _journalHepler.CreateJournal(OperationTypeEnum.Delete, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
 
         }
 

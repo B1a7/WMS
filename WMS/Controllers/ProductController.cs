@@ -10,7 +10,7 @@ namespace WMS.Controllers
 {
     [Route("api/product")]
     [ApiController]
-
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private IProductService _productService;
@@ -23,6 +23,7 @@ namespace WMS.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult AddProduct([FromBody] AddProductDto dto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -33,6 +34,7 @@ namespace WMS.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult Update([FromBody] UpdateProductDto dto, [FromRoute]int id)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -53,6 +55,7 @@ namespace WMS.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult Delete([FromRoute] int id)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -63,6 +66,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult<IEnumerable<ProductDto>> GetAll([FromQuery] ProductQuery query)
         {
             var productDtos = _productService.GetAll(query);
@@ -79,6 +83,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("{id}/detail")]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult<ProductDetailDto> GetFullDetailsById([FromRoute] int id)
         {
             var product = _productService.GetFullDetailsById(id);
@@ -95,6 +100,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("{id}/history")]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult GetProductHistory([FromRoute] int id)
         {
             var statusList = _productService.GetProductHistory(id);

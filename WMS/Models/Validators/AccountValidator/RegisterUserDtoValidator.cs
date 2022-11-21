@@ -8,12 +8,16 @@ namespace WMS.Models.Validators.Account
         public RegisterUserDtoValidator(WMSDbContext dbContext)
         {
             RuleFor(x => x.Email)
+                .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty()
                 .EmailAddress();
+
             RuleFor(x => x.Password)
                 .MinimumLength(8);
+
             RuleFor(x => x.ConfirmPassword)
                 .Equal(y => y.Password);
+
             RuleFor(x => x.Email)
                 .Custom((value, context) =>
                 {

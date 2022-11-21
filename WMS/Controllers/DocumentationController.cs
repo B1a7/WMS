@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WMS.Models.Entities;
 using WMS.Services;
 
@@ -7,6 +8,7 @@ namespace WMS.Controllers
 
     [Route("api/documentation")]
     [ApiController]
+    [Authorize]
     public class DocumentationController : ControllerBase
     {
         private readonly IDocumentationService _documentationService;

@@ -26,9 +26,25 @@ namespace WMS.Models
                 {
                     var roles = GetRoles();
                     _dbContext.Roles.AddRange(roles);
-                    _dbContext.SaveChanges();
                 }
 
+                #endregion
+
+                #region Users
+
+                var admin = new User()
+                {
+                    Email = "admin@admin.com",
+                    FirstName = "admin",
+                    LastName = "admin",
+                    Nationality = "admin",
+                    DateOfBirth = DateTime.Now,
+                    PasswordHash = "admin",
+                    RoleId = 3,                
+                };
+
+                _dbContext.Add(admin);
+                
                 #endregion
 
                 #region Addresses
@@ -137,11 +153,13 @@ namespace WMS.Models
             var roles = new List<Role>()
             {
                 new Role()
-                { Name = "User" },
+                { Name = "none" },
                 new Role()
-                { Name = "Manager" },
+                { Name = "warehouseman" },
+                new Role()
+                { Name = "manager" },
                 new Role() 
-                { Name = "Admin" }
+                { Name = "admin" }
             };
             return roles;
         }

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WMS.Services;
 
 namespace WMS.Controllers
 {
     [Route("api/warehouse")]
     [ApiController]
+    [Authorize]
     public class LayoutController : ControllerBase
     {
         private readonly ILayoutService _layoutService;

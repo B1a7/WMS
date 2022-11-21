@@ -18,20 +18,22 @@ namespace WMS.Services
     {
         void RegisterUser(RegisterUserDto dto, string loggedUserId);
         string GenerateJwt(LoginDto dto);
+        void ChangeUserRole(int id, UserRoleDto newRole, string loggedUserId);
+        void DeleteUser(int id, string loggedUserId);
     }
 
 
     public class AccountService : IAccountService
     {
-        private readonly WMSDbContext _context;
+        private readonly WMSDbContext _dbContext;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly AuthenticationSettings _authenticationSettings;
         private readonly IJournalHelper _journalHelper;
 
-        public AccountService(WMSDbContext context, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings,
+        public AccountService(WMSDbContext dbContext, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings,
             IJournalHelper journalHelper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _passwordHasher = passwordHasher;
             _authenticationSettings = authenticationSettings;
             _journalHelper = journalHelper;
@@ -43,21 +45,20 @@ namespace WMS.Services
                 Email = dto.Email,
                 DateOfBirth = dto.DateOfBirth,
                 Nationality = dto.Nationality,
-                RoleId = dto.RoleId,
             };
 
             var hashedPassword = _passwordHasher.HashPassword(newUser, dto.Password);
             newUser.PasswordHash = hashedPassword;
 
 
-            _context.Users.Add(newUser);
-            _context.SaveChanges();
-            _journalHelper.CreateJournal(OperationTypeEnum.Add, newUser.GetType().Name.ToString(), newUser.Id, loggedUserId);
+            _dbContext.Users.Add(newUser);
+            _dbContext.SaveChanges();
+            _journalHelper.CreateJournal(OperationTypeEnum.Register, newUser.GetType().Name.ToString(), newUser.Id, loggedUserId);
         }
 
         public string GenerateJwt(LoginDto dto)
         {
-            var user = _context.Users
+            var user = _dbContext.Users
                 .Include(u => u.Role)
                 .FirstOrDefault(u => u.Email == dto.Email);
             if (user is null)
@@ -88,6 +89,33 @@ namespace WMS.Services
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
+        }
+
+        public void ChangeUserRole(int id, UserRoleDto newRole, string loggedUserId)
+        {
+
+            var userRoleId = (int)(UserRoleEnum)Enum.Parse(typeof(DocumentTypesEnum), newRole.Role.ToLower());
+
+            var user = _dbContext.Users.First(x => x.Id == id);
+        
+            user.RoleId = userRoleId;
+
+            _dbContext.SaveChanges();
+            _journalHelper.CreateJournal(OperationTypeEnum.Add, user.GetType().Name.ToString(), user.Id, loggedUserId);
+
+        }
+
+        public void DeleteUser(int id, string loggedUserId)
+        {
+            var user = _dbContext.Users.FirstOrDefault(x => x.Id == id);
+            if (user == null)
+                return ;
+
+             _dbContext.Users.Remove(user);
+            _journalHelper.CreateJournal(OperationTypeEnum.Delete, user.GetType().Name.ToString(), user.Id, loggedUserId);
+             _dbContext.SaveChanges();
+
+
         }
     }
 }

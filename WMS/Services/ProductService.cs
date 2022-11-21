@@ -70,7 +70,7 @@ namespace WMS.Services
             product.Categories.Add(new Category() { Name = dto.CategoryName, HSCode = dto.HSCode });
 
             _dbContext.SaveChanges();
-            _journalHelper.CreateJournal(OperationTypeEnum.Add, product.GetType().Name.ToString(), product.Id, loggedUserId);
+            _journalHelper.CreateJournal(OperationTypeEnum.Update, product.GetType().Name.ToString(), product.Id, loggedUserId);
 
         }
 
@@ -102,7 +102,7 @@ namespace WMS.Services
 
             _dbContext.Statuses.Add(newStatus);
             _dbContext.SaveChanges();
-            _journalHelper.CreateJournal(OperationTypeEnum.Add, product.GetType().Name.ToString(), product.Id, loggedUserId);
+            _journalHelper.CreateJournal(OperationTypeEnum.ChangeStatus, product.GetType().Name.ToString(), product.Id, loggedUserId);
 
             var result = _mapper.Map<ProductDto>(product);
 
@@ -121,7 +121,7 @@ namespace WMS.Services
 
             _dbContext.Products.Remove(product);
             _dbContext.SaveChanges();
-            _journalHelper.CreateJournal(OperationTypeEnum.Add, product.GetType().Name.ToString(), product.Id, loggedUserId);
+            _journalHelper.CreateJournal(OperationTypeEnum.Delete, product.GetType().Name.ToString(), product.Id, loggedUserId);
 
         }
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using NLog.Web;
 using System.Reflection;
 using System.Text;
@@ -16,6 +17,7 @@ using WMS.Models.Dtos.ProductDtos;
 using WMS.Models.Dtos.SupplierDtos;
 using WMS.Models.Entities;
 using WMS.Models.Validators.Account;
+using WMS.Models.Validators.AccountValidator;
 using WMS.Models.Validators.ProductValidator;
 using WMS.Models.Validators.SupplierValidator;
 using WMS.Services;
@@ -53,7 +55,34 @@ builder.Services.AddControllers().AddFluentValidation();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<RequestTimeMiddleware>();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
+
 builder.Services.AddDbContext<WMSDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("WMSConnection")));
 builder.Services.AddScoped<Seeder>();
@@ -74,6 +103,7 @@ builder.Services.AddScoped<IValidator<UpdateProductDto>, UpdateProductDtoValidat
 builder.Services.AddScoped<IValidator<SupplierQuery>, SupplierQueryValidator>();
 builder.Services.AddScoped<IValidator<AddSupplierDto>, AddSupplierDtoValidator>();
 builder.Services.AddScoped<IValidator<UpdateSupplierDto>, AddSupplierDtoValidator>();
+builder.Services.AddScoped<IValidator<UserRoleDto>, UserRoleDtoValidator>();
 
 builder.Services.AddScoped<IJournalHelper, JournalHelper>();
 builder.Services.AddScoped<IQRHelper, QRHelper>();
@@ -91,8 +121,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-var scope = app.Services.CreateScope();
-var generator = scope.ServiceProvider.GetRequiredService<Seeder>();
+//DATA GENERATOR
+//var scope = app.Services.CreateScope();
+//var generator = scope.ServiceProvider.GetRequiredService<Seeder>();
 //generator.GenerateData();
 
 

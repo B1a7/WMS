@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WMS.Models.Dtos.SupplierDtos;
 using WMS.Services;
@@ -7,6 +8,7 @@ namespace WMS.Controllers
 {
     [Route("api/customer")]
     [ApiController]
+    [Authorize]
     public class SupplierController : ControllerBase
     {
         private ISupplierService _supplierService;
@@ -18,6 +20,7 @@ namespace WMS.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult AddSupplier([FromBody] AddSupplierDto dto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -28,6 +31,7 @@ namespace WMS.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult Update([FromBody] UpdateSupplierDto dto, [FromRoute] int id)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -38,6 +42,7 @@ namespace WMS.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult Delete([FromRoute] int id)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -47,6 +52,7 @@ namespace WMS.Controllers
             return NoContent();
         }
         [HttpGet]
+        [Authorize(Roles = "admin, manager")]
         public ActionResult GetAll([FromQuery] SupplierQuery query)
         {
             var supplierDtos = _supplierService.GetAll(query);
