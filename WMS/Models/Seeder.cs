@@ -37,8 +37,6 @@ namespace WMS.Models
                     Email = "admin@admin.com",
                     FirstName = "admin",
                     LastName = "admin",
-                    Nationality = "admin",
-                    DateOfBirth = DateTime.Now,
                     PasswordHash = "admin",
                     RoleId = 3,                
                 };

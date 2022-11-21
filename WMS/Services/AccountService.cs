@@ -43,8 +43,8 @@ namespace WMS.Services
             var newUser = new User()
             {
                 Email = dto.Email,
-                DateOfBirth = dto.DateOfBirth,
-                Nationality = dto.Nationality,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
             };
 
             var hashedPassword = _passwordHasher.HashPassword(newUser, dto.Password);
@@ -73,8 +73,6 @@ namespace WMS.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new Claim(ClaimTypes.Role, $"{user.Role.Name}"),
-                new Claim("DateOfBirth", user.DateOfBirth.Value.ToString("yyyy-MM-dd")),
-                new Claim("Nationality", user.Nationality)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
