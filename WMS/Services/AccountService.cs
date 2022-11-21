@@ -100,8 +100,8 @@ namespace WMS.Services
         
             user.RoleId = userRoleId;
 
-            _dbContext.SaveChanges();
             _journalHelper.CreateJournal(OperationTypeEnum.Add, user.GetType().Name.ToString(), user.Id, loggedUserId);
+            _dbContext.SaveChanges();
 
         }
 
@@ -111,9 +111,9 @@ namespace WMS.Services
             if (user == null)
                 return ;
 
-             _dbContext.Users.Remove(user);
+            _dbContext.Users.Remove(user);
             _journalHelper.CreateJournal(OperationTypeEnum.Delete, user.GetType().Name.ToString(), user.Id, loggedUserId);
-             _dbContext.SaveChanges();
+            _dbContext.SaveChanges();
 
 
         }

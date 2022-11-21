@@ -7,6 +7,18 @@ namespace WMS.Models.Validators.Account
     {
         public RegisterUserDtoValidator(WMSDbContext dbContext)
         {
+            RuleFor(x => x.FirstName)
+                .Cascade(CascadeMode.StopOnFirstFailure)
+                .NotEmpty().WithMessage("{PropertyName} cannot be empty")
+                .Length(2, 50).WithMessage("{PropertyName} invalid length")
+                .Must(BeValidName).WithMessage("{PropertyName} invalid syntax");
+
+            RuleFor(x => x.LastName)
+                .Cascade(CascadeMode.StopOnFirstFailure)
+                .NotEmpty().WithMessage("{PropertyName} cannot be empty")
+                .Length(2, 50).WithMessage("{PropertyName} invalid length")
+                .Must(BeValidName).WithMessage("{PropertyName} invalid syntax");
+
             RuleFor(x => x.Email)
                 .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty()
@@ -26,6 +38,14 @@ namespace WMS.Models.Validators.Account
                         context.AddFailure("Email", "That email is taken");
                 });
 
+        }
+
+        private bool BeValidName(string name)
+        {
+            name = name.Replace("-", "");
+            name = name.Replace(" ", "");
+
+            return name.All(Char.IsLetter);
         }
     }
 }
