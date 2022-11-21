@@ -8,7 +8,8 @@ namespace WMS.Models
     public class Seeder
     {
         private readonly WMSDbContext _dbContext;
-        
+        static Random random = new Random();
+
         public Seeder(WMSDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -63,6 +64,8 @@ namespace WMS.Models
                     .RuleFor(c => c.Name, f => f.Commerce.Color())
                     .RuleFor(c => c.HSCode, f => f.Commerce.Ean8());
 
+                var categoriesList = categoryGenerator.Generate(10);
+                _dbContext.Categories.AddRange(categoriesList);
                 #endregion
 
                 #region Statuses
@@ -105,7 +108,7 @@ namespace WMS.Models
                 #region Products
 
                 var layoutId = 0;
-
+                int rand = random.Next(categoriesList.Count);
                 var productGenerator = new Faker<Product>()
                     .RuleFor(p => p.Name, f => f.Commerce.ProductName())
                     .RuleFor(p => p.Quantity, f => f.PickRandom(1, 10))
@@ -113,8 +116,14 @@ namespace WMS.Models
                     .RuleFor(p => p.ProductionDate, f => DateTime.Now)
                     .RuleFor(p => p.Layout, f => layouts[layoutId])
                     .RuleFor(p => p.Size, f => layouts[layoutId++].SpotSize)
-                    .RuleFor(p => p.Categories, f => categoryGenerator.Generate(2))
-                    .RuleFor(p => p.Statuses, f => new List<Status>(){
+                    .RuleFor(p => p.Categories, f => new List<Category>()
+                    {
+                        categoriesList[rand],
+                        categoriesList[rand],
+                        categoriesList[rand]
+                    })
+                    .RuleFor(p => p.Statuses, f => new List<Status>()
+                    {
                         statusInactiveGenerator.Generate(),
                         statusInactiveGenerator.Generate(),
                         statusActiveGenerator.Generate()
