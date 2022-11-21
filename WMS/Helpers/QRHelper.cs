@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using IronBarCode;
 using System.Drawing;
+using WMS.Enums;
 using WMS.Exceptions;
 using WMS.Models;
 using WMS.Models.Dtos.DocumentationDtos;
@@ -52,7 +53,7 @@ namespace WMS.Helpers
             if (!isIdCorrect)
                 throw new IncorrectInputException("QrCode is not in our database");
 
-            if (type == "Product")
+            if (type == QRTypesEnum.Product.ToString())
             {
                 var product = _dbContext.Products
                     .FirstOrDefault(p => p.Id == typeId);
@@ -62,7 +63,7 @@ namespace WMS.Helpers
                 return result;
             }
 
-            if (type == "Supplier")
+            if (type == QRTypesEnum.Supplier.ToString())
             {
                 var supplier = _dbContext.Suppliers
                     .FirstOrDefault(p => p.Id == typeId);

@@ -45,7 +45,8 @@ namespace WMS.Helpers
             var currentStatus = product.Statuses
                 .FirstOrDefault(s => s.IsActive == true);
 
-            if (currentStatus.PackageStatus == PackageStatus.PlacedInWarehouse && newPackageStatus == PackageStatus.PlacedInWarehouse)
+            if (currentStatus.PackageStatus == PackageStatus.PlacedInWarehouse 
+                    && newPackageStatus == PackageStatus.PlacedInWarehouse)
                 return;
             else if (newPackageStatus == PackageStatus.PlacedInWarehouse)
                 AddToWarehouse(product);

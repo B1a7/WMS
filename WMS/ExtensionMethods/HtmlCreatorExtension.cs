@@ -15,8 +15,6 @@ namespace WMS.ExtensionMethods
         }
 
 
-
-
         private static string GenerateLabel(this EntityBase entity, string filePath)
         {
             using (var reader = new StreamReader(filePath))
@@ -65,7 +63,6 @@ namespace WMS.ExtensionMethods
                 return content;
             }
         }
-
 
         public static string GenerateHTML(this EntityBase entity, DocumentTypesEnum docEnum)
         {
