@@ -27,8 +27,6 @@ namespace WMS
                 .ForMember(m => m.Position, c => c.MapFrom(e => e.Layout.PositionXYZ));
 
             CreateMap<AddProductDto, Product>()
-                .ForMember(m => m.Categories, c => c.MapFrom(dto => new List<Category>(){
-                    new Category() { Name = dto.CategoryName, HSCode = dto.HSCode} }))
                 .ForMember(m => m.Statuses, c => c.MapFrom(dto => new List<Status>(){ 
                     new Status() { PackageStatus = dto.Status, IsActive = dto.IsActive, DateStatus = dto.StatusRegistrationDate }}));
            

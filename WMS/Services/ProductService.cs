@@ -48,7 +48,10 @@ namespace WMS.Services
         public int AddProduct( AddProductDto dto, string loggedUserId)
         {
             var newProduct = _mapper.Map<Product>(dto);
+            var categoryName = dto.CategoryName;
+            var hsCode = dto.HSCode;
 
+            _productHelper.AddCategory(categoryName, hsCode, newProduct);
 
             _dbContext.Products.Add(newProduct);
             _dbContext.SaveChanges();
@@ -67,7 +70,8 @@ namespace WMS.Services
 
             product.Name = dto.Name;
             product.Quantity = dto.Quantity;
-            product.Categories.Add(new Category() { Name = dto.CategoryName, HSCode = dto.HSCode });
+
+            _productHelper.AddCategory(dto.CategoryName, dto.HSCode, product);
 
             _dbContext.SaveChanges();
             _journalHelper.CreateJournal(OperationTypeEnum.Update, product.GetType().Name.ToString(), product.Id, loggedUserId);

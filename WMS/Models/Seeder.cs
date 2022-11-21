@@ -113,7 +113,7 @@ namespace WMS.Models
                     .RuleFor(p => p.ProductionDate, f => DateTime.Now)
                     .RuleFor(p => p.Layout, f => layouts[layoutId])
                     .RuleFor(p => p.Size, f => layouts[layoutId++].SpotSize)
-                    .RuleFor(p => p.Categories, f => categoryGenerator.Generate(4))
+                    .RuleFor(p => p.Categories, f => categoryGenerator.Generate(2))
                     .RuleFor(p => p.Statuses, f => new List<Status>(){
                         statusInactiveGenerator.Generate(),
                         statusInactiveGenerator.Generate(),

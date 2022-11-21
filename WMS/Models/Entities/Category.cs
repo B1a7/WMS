@@ -6,7 +6,6 @@
         public string Name { get; set; }
         public string HSCode { get; set; }
 
-        public int? ProductId { get; set; }
-        public virtual Product Product { get; set; }
+        public virtual List<Product> Product { get; set; }
     }
 }
