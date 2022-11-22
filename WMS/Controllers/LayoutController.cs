@@ -19,49 +19,49 @@ namespace WMS.Controllers
 
 
         [HttpGet("capacity")]
-        public ActionResult GetCapacity()
+        public async Task<ActionResult> GetCapacityAsync()
         {
-            var capacity = _layoutService.GetCapacity();
+            var capacity = await _layoutService.GetCapacityAsync();
 
             return Ok(capacity);
         }
 
         [HttpGet("detailCapacity")]
-        public ActionResult GetWarehouseDetailCapacity([FromBody] string size)
+        public async Task<ActionResult> GetWarehouseDetailCapacityAsync([FromBody] string size)
         {
-            var detailCapacity = _layoutService.GetDetailCapacity(size);
+            var detailCapacity = await _layoutService.GetDetailCapacityAsync(size);
 
             return Ok(detailCapacity);
         }
 
         [HttpGet("filling")]
-        public ActionResult GetWarehouseFilling()
+        public async Task<ActionResult> GetWarehouseFillingAsync()
         {
-            var filling = _layoutService.GetWarehouseFilling();
+            var filling = await _layoutService.GetWarehouseFillingAsync();
 
             return Ok(filling);
         }
 
         [HttpGet("detailFilling")]
-        public ActionResult GetWarehouseDetailFilling([FromBody] string size)
+        public async Task<ActionResult> GetWarehouseDetailFillingAsync([FromBody] string size)
         {
-            var detailfilling = _layoutService.GetWarehouseDetailFilling(size);
+            var detailfilling = await _layoutService.GetWarehouseDetailFillingAsync(size);
 
             return Ok(detailfilling);
         }
 
         [HttpGet("product/{id}/placement")]
-        public ActionResult GetPlacementProduct([FromRoute] int layoutId)
+        public async Task<ActionResult> GetPlacementProductAsync([FromRoute] int layoutId)
         {
-            var product = _layoutService.GetPlacementProduct(layoutId);
+            var product = await _layoutService.GetPlacementProductAsync(layoutId);
 
             return Ok(product);
         }
 
         [HttpGet("map")]
-        public ActionResult GetMap()
+        public async Task<ActionResult> GetMap()
         {
-            var product = _layoutService.GetMap();
+            var product = await _layoutService.GetMapAsync();
 
             return Ok(product);
         }

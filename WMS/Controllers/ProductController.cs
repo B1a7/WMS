@@ -24,86 +24,86 @@ namespace WMS.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult AddProduct([FromBody] AddProductDto dto)
+        public async Task<ActionResult> AddProduct([FromBody] AddProductDto dto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var id = _productService.AddProduct(dto, loggedUserId);
+            var id = await _productService.AddProductAsync(dto, loggedUserId);
 
             return Created($"/api/product/{id}", null);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult Update([FromBody] UpdateProductDto dto, [FromRoute]int id)
+        public async Task<ActionResult> UpdateAsync([FromBody] UpdateProductDto dto, [FromRoute]int id)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _productService.Update(id, dto, loggedUserId);
+            var result = await _productService.UpdateAsync(id, dto, loggedUserId);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPut("{id}/changestatus")]
-        public ActionResult ChangeStatus([FromRoute] int id, [FromBody] string newPackageStatus)
+        public async Task<ActionResult> ChangeStatusAsync([FromRoute] int id, [FromBody] string newPackageStatus)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var product = _productService.ChangeStatus(id, newPackageStatus, loggedUserId);
+            var product = await _productService.ChangeStatusAsync(id, newPackageStatus, loggedUserId);
 
             return Ok(product);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult Delete([FromRoute] int id)
+        public async Task<ActionResult> DeleteAsync([FromRoute] int id)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _productService.Delete(id, loggedUserId);
+            await _productService.DeleteAsync(id, loggedUserId);
 
             return NoContent();
         }
 
         [HttpGet]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult<IEnumerable<ProductDto>> GetAll([FromQuery] ProductQuery query)
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllAsync([FromQuery] ProductQuery query)
         {
-            var productDtos = _productService.GetAll(query);
+            var productDtos = await _productService.GetAllAsync(query);
 
             return Ok(productDtos);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ProductDto> GetById([FromRoute] int id)
+        public async Task<ActionResult<ProductDto>> GetByIdAsync([FromRoute] int id)
         {
-            var product = _productService.GetById(id);
+            var product = await _productService.GetByIdAsync(id);
 
             return Ok(product);
         }
 
         [HttpGet("{id}/detail")]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult<ProductDetailDto> GetFullDetailsById([FromRoute] int id)
+        public async Task<ActionResult<ProductDetailDto>> GetFullDetailsByIdAsync([FromRoute] int id)
         {
-            var product = _productService.GetFullDetailsById(id);
+            var product = await _productService.GetFullDetailsByIdAsync(id);
 
             return Ok(product);
         }
 
         [HttpGet("{id}/placement")]
-        public ActionResult GetPlacement([FromRoute] int id)
+        public async Task<ActionResult> GetPlacementAsync([FromRoute] int id)
         {
-            var placement = _productService.GetPlacement(id);
+            var placement = await _productService.GetPlacementAsync(id);
 
             return Ok(placement);
         }
 
         [HttpGet("{id}/history")]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult GetProductHistory([FromRoute] int id)
+        public async Task<ActionResult> GetProductHistoryAsync([FromRoute] int id)
         {
-            var statusList = _productService.GetProductHistory(id);
+            var statusList = await _productService.GetProductHistoryAsync(id);
 
             return Ok(statusList);
         }

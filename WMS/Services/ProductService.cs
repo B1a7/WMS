@@ -14,15 +14,15 @@ namespace WMS.Services
 {
     public interface IProductService
     {
-        int AddProduct(AddProductDto dto, string loggedUserId);
-        ProductDto GetById(int id);
-        void Delete(int id, string loggedUserId);
-        void Update(int id, UpdateProductDto dto, string loggedUserId);
-        PagedResult<ProductDto> GetAll(ProductQuery query);
-        ProductDetailDto GetFullDetailsById(int id);
-        string GetPlacement(int id);
-        ProductDto ChangeStatus(int id, string newPackageStatus, string loggedUserId);
-        List<ProductStatusDto> GetProductHistory(int id);
+        Task<int> AddProductAsync(AddProductDto dto, string loggedUserId);
+        Task<ProductDto> GetByIdAsync(int id);
+        Task<bool> DeleteAsync(int id, string loggedUserId);
+        Task<bool> UpdateAsync(int id, UpdateProductDto dto, string loggedUserId);
+        Task<PagedResult<ProductDto>> GetAllAsync(ProductQuery query);
+        Task<ProductDto> ChangeStatusAsync(int id, string newPackageStatus, string loggedUserId);
+        Task<ProductDetailDto> GetFullDetailsByIdAsync(int id);
+        Task<string> GetPlacementAsync(int id);
+        Task<List<ProductStatusDto>> GetProductHistoryAsync(int id);
     }
 
     public class ProductService : IProductService
@@ -46,22 +46,22 @@ namespace WMS.Services
         }
 
 
-        public int AddProduct( AddProductDto dto, string loggedUserId)
+        public async Task<int> AddProductAsync( AddProductDto dto, string loggedUserId)
         {
             var newProduct = _mapper.Map<Product>(dto);
             var categoryName = dto.CategoryName;
             var hsCode = dto.HSCode;
 
-            _productHelper.AddCategory(categoryName, hsCode, newProduct);
+            await _productHelper.AddCategoryAsync(categoryName, hsCode, newProduct);
 
-            _dbContext.Products.Add(newProduct);
-            _dbContext.SaveChanges();
-            _journalHelper.CreateJournal(OperationTypeEnum.Add, newProduct.GetType().Name.ToString(), newProduct.Id, loggedUserId);
+            await _dbContext.Products.AddAsync(newProduct);
+            await _dbContext.SaveChangesAsync();
+            await _journalHelper.CreateJournalAsync(OperationTypeEnum.Add, newProduct.GetType().Name.ToString(), newProduct.Id, loggedUserId);
 
             return newProduct.Id;
         }
 
-        public void Update(int id, UpdateProductDto dto, string loggedUserId)
+        public async Task<bool> UpdateAsync(int id, UpdateProductDto dto, string loggedUserId)
         {
 
             var product = _dbContext.Products
@@ -76,11 +76,13 @@ namespace WMS.Services
 
             _productHelper.AddCategory(dto.CategoryName, dto.HSCode, product);
 
-            _journalHelper.CreateJournal(OperationTypeEnum.Update, product.GetType().Name.ToString(), product.Id, loggedUserId);
+            await _journalHelper.CreateJournalAsync(OperationTypeEnum.Update, product.GetType().Name.ToString(), product.Id, loggedUserId);
+
+            return true;
 
         }
 
-        public ProductDto ChangeStatus(int id, string newPackageStatus, string loggedUserId)
+        public async Task<ProductDto> ChangeStatusAsync(int id, string newPackageStatus, string loggedUserId)
         {
             var product = _dbContext.Products
                 .AsNoTracking()
@@ -100,7 +102,10 @@ namespace WMS.Services
             if (product.Statuses != null)
                 product.Statuses.ForEach(s => s.IsActive = false);
                       
-            _productPlacementHelper.ModifyProductPlacement(product, newPackageStatusEnum);      
+            var isPlacementChanged = await _productPlacementHelper.ModifyProductPlacementAsync(product, newPackageStatusEnum);
+
+            if (!isPlacementChanged)
+                throw new InternalServerErrorException("Cannot change product placement");
 
             var newStatus = new Status()
             {
@@ -110,16 +115,18 @@ namespace WMS.Services
                 ProductId = id
             };
 
-            _dbContext.Statuses.Add(newStatus);
-            _dbContext.SaveChanges();
-            _journalHelper.CreateJournal(OperationTypeEnum.ChangeStatus, product.GetType().Name.ToString(), product.Id, loggedUserId);
+            await _dbContext.Statuses.AddAsync(newStatus);
+            await _dbContext.SaveChangesAsync();
+            await _journalHelper.CreateJournalAsync(OperationTypeEnum.ChangeStatus, product.GetType().Name.ToString(), product.Id, loggedUserId);
 
+
+            
             var result = _mapper.Map<ProductDto>(product);
 
             return result;
         }
 
-        public void Delete(int id, string loggedUserId)
+        public async Task<bool> DeleteAsync(int id, string loggedUserId)
         {
             _logger.LogError($"Product with id: {id} DELETE action invoked");
 
@@ -130,16 +137,17 @@ namespace WMS.Services
 
             _dbContext.Entry(product).State = EntityState.Deleted;
 
-            var result = _dbContext.SaveChanges();
+            var result = await _dbContext.SaveChangesAsync();
 
             if (result == 0)
                 throw new NotFoundException("Product not found");
 
-            _journalHelper.CreateJournal(OperationTypeEnum.Delete, product.GetType().Name.ToString(), product.Id, loggedUserId);
+            await _journalHelper.CreateJournalAsync(OperationTypeEnum.Delete, product.GetType().Name.ToString(), product.Id, loggedUserId);
 
+            return result > 0 ? true : false;
         }
 
-        public PagedResult<ProductDto> GetAll(ProductQuery query)
+        public Task<PagedResult<ProductDto>> GetAllAsync(ProductQuery query)
         {
             var baseQuery = _dbContext
                 .Products
@@ -180,10 +188,10 @@ namespace WMS.Services
 
             var result = new PagedResult<ProductDto>(productsDtos, totalItemsCount, query.PageSize, query.PageNumber);
 
-            return result;
+            return Task.FromResult(result);
         }
 
-        public ProductDto GetById(int id)
+        public Task<ProductDto> GetByIdAsync(int id)
         {
 
             var product = _dbContext
@@ -199,10 +207,10 @@ namespace WMS.Services
             if (product is null)
                 throw new NotFoundException("Product not found");
 
-            return product;
+            return Task.FromResult(product);
         }
 
-        public ProductDetailDto GetFullDetailsById(int id)
+        public Task<ProductDetailDto> GetFullDetailsByIdAsync(int id)
         {
 
             var product = _dbContext
@@ -218,10 +226,10 @@ namespace WMS.Services
             if (product is null)
                 throw new NotFoundException("Product not found");
 
-            return product;
+            return Task.FromResult(product);
         }
 
-        public string GetPlacement(int id)
+        public Task<string> GetPlacementAsync(int id)
         {
             var productPlacement = _dbContext.Products
                 .AsNoTracking()
@@ -232,10 +240,10 @@ namespace WMS.Services
             if (productPlacement is null)
                 throw new NotFoundException("product is not in our Warehouse");
 
-            return productPlacement;
+            return Task.FromResult(productPlacement);
         }
 
-        public List<ProductStatusDto> GetProductHistory(int id)
+        public Task<List<ProductStatusDto>> GetProductHistoryAsync(int id)
         {
             var statuses = _dbContext.Products
                 .AsNoTracking()
@@ -243,9 +251,12 @@ namespace WMS.Services
                 .FirstOrDefault(p => p.Id == id)
                 .Statuses;
 
+            if (statuses is null)
+                throw new NotFoundException("No product history found");
+
             var result = _mapper.Map<List<ProductStatusDto>>(statuses);
 
-            return result;
+            return Task.FromResult(result);
         }
     }
 }

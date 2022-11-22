@@ -7,7 +7,7 @@ namespace WMS.Helpers
 {
     public interface IProductHelper
     {
-        void AddCategory(string categoryName, string hsCode, Product product);
+        Task AddCategoryAsync(string categoryName, string hsCode, Product product);
     }
 
     public class ProductHelper : IProductHelper
@@ -20,7 +20,7 @@ namespace WMS.Helpers
         }
 
 
-        public void AddCategory(string categoryName, string hsCode, Product product)
+        public async Task AddCategoryAsync(string categoryName, string hsCode, Product product)
         {
             if (!_dbContext.Categories.Any(c => c.Name.ToLower() == categoryName.ToLower()))
             {
@@ -30,7 +30,7 @@ namespace WMS.Helpers
                     HSCode = hsCode,
                 };
 
-                _dbContext.Categories.Add(newCategory);
+                await _dbContext.Categories.AddAsync(newCategory);
                 product.Categories.Add(newCategory);
             }
             else

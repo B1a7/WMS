@@ -57,7 +57,7 @@ namespace WMS.Services
             _dbContext.Users.Add(newUser);
             _dbContext.SaveChanges();
 
-            _journalHelper.CreateJournal(OperationTypeEnum.Register, newUser.GetType().Name.ToString(), newUser.Id, loggedUserId);
+            _journalHelper.CreateJournalAsync(OperationTypeEnum.Register, newUser.GetType().Name.ToString(), newUser.Id, loggedUserId);
         }
 
         public string GenerateJwt(LoginDto dto)

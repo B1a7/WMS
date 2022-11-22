@@ -7,7 +7,7 @@ namespace WMS.Helpers
 {
     public interface IProductPlacementHelper
     {
-        void ModifyProductPlacement(Product product, string newPackageStatus);
+        Task<bool> ModifyProductPlacementAsync(Product product, string newPackageStatus);
     }
 
     public class ProductPlacementHelper : IProductPlacementHelper
@@ -20,7 +20,7 @@ namespace WMS.Helpers
         }
 
 
-        private void AddToWarehouse(Product product)
+        private async Task<bool> AddToWarehouseAsync(Product product)
         {
             var emptySpots = _dbContext.Layouts
                 .Where(l => l.Product == null && l.SpotSize == product.Size)
@@ -30,28 +30,37 @@ namespace WMS.Helpers
                 throw new NoEmptySpotException("Cannot add product to the warehouse (no empty spot)");
             
             product.Layout = emptySpots;
-            _dbContext.SaveChanges();
+            int result = await _dbContext.SaveChangesAsync();
+
+            return result > 0 ? true : false;
         }
 
-        private void RemoveFromWarehouse(Product product)
+        private async Task<bool> RemoveFromWarehouseAsync(Product product)
         {
             product.LayoutId = null;
-            _dbContext.SaveChanges();
+
+            int result = await _dbContext.SaveChangesAsync();
+
+            return result > 0 ? true : false;
         }
 
 
-        public void ModifyProductPlacement(Product product, string newPackageStatus)
+        public async Task<bool> ModifyProductPlacementAsync(Product product, string newPackageStatus)
         {
             var currentStatus = product.Statuses
                 .FirstOrDefault(s => s.IsActive == true);
+            bool result;
 
-            if (currentStatus.PackageStatus == PackageStatus.PlacedInWarehouse 
+            if (currentStatus.PackageStatus == PackageStatus.PlacedInWarehouse
                     && newPackageStatus == PackageStatus.PlacedInWarehouse)
-                return;
+                return true;
+
             else if (newPackageStatus == PackageStatus.PlacedInWarehouse)
-                AddToWarehouse(product);
+                result = await AddToWarehouseAsync(product);
             else
-                RemoveFromWarehouse(product);
+                result = await RemoveFromWarehouseAsync(product);
+
+            return false;
         }
 
     }

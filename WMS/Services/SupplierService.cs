@@ -14,12 +14,12 @@ namespace WMS.Services
 {
     public interface ISupplierService
     {
-        int AddSupplier(AddSupplierDto dto, string loggedUserId);
-        void Update(UpdateSupplierDto dto, int id, string loggedUserId);
-        void Delete(int id, string loggedUserId);
-        PagedResult<SupplierDto> GetAll(SupplierQuery query);
-        SupplierDetailDto GetById(int id);
-        List<SupplierProductDto> GetSupplierProducts(int id);
+        Task<int> AddSupplierAsync(AddSupplierDto dto, string loggedUserId);
+        Task<bool> UpdateAsync(UpdateSupplierDto dto, int id, string loggedUserId);
+        Task<bool> DeleteAsync(int id, string loggedUserId);
+        Task<PagedResult<SupplierDto>> GetAllAsync(SupplierQuery query);
+        Task<SupplierDetailDto> GetByIdAsync(int id);
+        Task<List<SupplierProductDto>> GetSupplierProductsAsync(int id);
     }
 
     public class SupplierService : ISupplierService
@@ -38,18 +38,18 @@ namespace WMS.Services
         }
 
 
-        public int AddSupplier(AddSupplierDto dto, string loggedUserId)
+        public async Task<int> AddSupplierAsync(AddSupplierDto dto, string loggedUserId)
         {
             var supplier = _mapper.Map<Supplier>(dto);
 
-            _dbContext.Suppliers.Add(supplier);
-            _dbContext.SaveChanges();
-            _journalHepler.CreateJournal(OperationTypeEnum.Add, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
+            await _dbContext.Suppliers.AddAsync(supplier);
+            await _dbContext.SaveChangesAsync();
+            await _journalHepler.CreateJournalAsync(OperationTypeEnum.Add, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
 
             return supplier.Id;
         }
 
-        public void Update(UpdateSupplierDto dto, int id, string loggedUserId)
+        public async Task<bool> UpdateAsync(UpdateSupplierDto dto, int id, string loggedUserId)
         {
             _logger.LogError($"Supplier with id: {id} UPDATE action invoked");
 
@@ -64,11 +64,12 @@ namespace WMS.Services
 
             _dbContext.Update(updatedSupllier);
 
-            _journalHepler.CreateJournal(OperationTypeEnum.Update, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
+            bool journal = await _journalHepler.CreateJournalAsync(OperationTypeEnum.Update, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
 
+            return journal;
         }
 
-        public void Delete(int id, string loggedUserId)
+        public async Task<bool> DeleteAsync(int id, string loggedUserId)
         {
             _logger.LogError($"Supplier with id: {id} DELETE action invoked");
 
@@ -80,17 +81,12 @@ namespace WMS.Services
 
             _dbContext.Entry(supplier).State = EntityState.Deleted;
 
-            var result = _dbContext.SaveChanges();
+            var result = await _journalHepler.CreateJournalAsync(OperationTypeEnum.Delete, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
 
-
-            if (result == 0)
-                throw new NotFoundException("Supplier not found");
-
-            _journalHepler.CreateJournal(OperationTypeEnum.Delete, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
-
+            return result;
         }
 
-        public PagedResult<SupplierDto> GetAll(SupplierQuery query)
+        public Task<PagedResult<SupplierDto>> GetAllAsync(SupplierQuery query)
         {
             var baseQuery = _dbContext.Suppliers
                 .AsNoTracking()
@@ -127,10 +123,10 @@ namespace WMS.Services
 
             var result = new PagedResult<SupplierDto>(suppliersDtos, totalItemsCount, query.PageSize, query.PageNumber);
 
-            return result;
+            return Task.FromResult(result);
         }
 
-        public SupplierDetailDto GetById(int id)
+        public Task<SupplierDetailDto> GetByIdAsync(int id)
         {
             var supplier = _dbContext.Suppliers
                 .AsNoTracking()
@@ -142,10 +138,10 @@ namespace WMS.Services
 
             var result  = _mapper.Map<SupplierDetailDto>(supplier);
 
-            return result;
+            return Task.FromResult(result);
         }
 
-        public List<SupplierProductDto> GetSupplierProducts(int id)
+        public Task<List<SupplierProductDto>> GetSupplierProductsAsync(int id)
         {
             var supplier = _dbContext.Suppliers
                 .AsNoTracking()
@@ -167,7 +163,7 @@ namespace WMS.Services
 
             var result = _mapper.Map<List<SupplierProductDto>>(ProductList);
             
-            return result;
+            return Task.FromResult(result);
 
         }
     }

@@ -11,12 +11,12 @@ namespace WMS.Services
 {
     public interface ILayoutService
     {
-        int GetCapacity();
-        int GetDetailCapacity(string size);
-        int GetWarehouseFilling();
-        int GetWarehouseDetailFilling(string size);
-        ProductDto GetPlacementProduct(int layoutId);
-        Dictionary<int, Coordinates> GetMap();
+        Task<int> GetCapacityAsync();
+        Task<int> GetDetailCapacityAsync(string size);
+        Task<int> GetWarehouseFillingAsync();
+        Task<int> GetWarehouseDetailFillingAsync(string size);
+        Task<ProductDto> GetPlacementProductAsync(int layoutId);
+        Task<Dictionary<int, Coordinates>> GetMapAsync();
 
     }
 
@@ -36,16 +36,16 @@ namespace WMS.Services
         }
 
 
-        public int GetCapacity()
+        public Task<int> GetCapacityAsync()
         {
             var capacity = _dbContext.Layouts
                 .AsNoTracking()
                 .Count();
 
-            return capacity;
+            return Task.FromResult(capacity);
         }
 
-        public int GetDetailCapacity(string size)
+        public Task<int> GetDetailCapacityAsync(string size)
         {
             if (!SpotSize.SpotSizes.Contains(size.ToLower()))
                 throw new BadRequestException($"Wrong size name pick one of {SpotSize.SpotSizes.ToList()}");
@@ -55,10 +55,10 @@ namespace WMS.Services
                 .Where(l => l.SpotSize == size)
                 .Count();
 
-            return capacity;
+            return Task.FromResult(capacity);
         }
 
-        public Dictionary<int, Coordinates> GetMap()
+        public Task<Dictionary<int, Coordinates>> GetMapAsync()
         {
             var map = _dbContext.Layouts
                 .AsNoTracking()
@@ -71,10 +71,10 @@ namespace WMS.Services
                 result.Add(layout.Id, layout.PositionXYZ.ConvertToStruct());
             }
 
-            return result;
+            return Task.FromResult(result);
         }
 
-        public ProductDto GetPlacementProduct(int layoutId)
+        public Task<ProductDto> GetPlacementProductAsync(int layoutId)
         {
             var product = _dbContext.Layouts
                 .AsNoTracking()
@@ -85,31 +85,31 @@ namespace WMS.Services
 
             var result = _mapper.Map<ProductDto>(product);
 
-            return result;
+            return Task.FromResult(result);
         }
 
-        public int GetWarehouseDetailFilling(string size)
+        public Task<int> GetWarehouseDetailFillingAsync(string size)
         {
 
             if (!SpotSize.SpotSizes.Contains(size.ToLower()))
                 throw new BadRequestException("Wrong size name");
 
-            var filling = _dbContext.Layouts
+            var detailFilling = _dbContext.Layouts
                 .AsNoTracking()
                 .Where(l => l.SpotSize == size && l.Product != null)
                 .Count();
 
-            return filling;
+            return Task.FromResult(detailFilling);
         }
         
-        public int GetWarehouseFilling()
+        public Task<int> GetWarehouseFillingAsync()
         {
-            var occupied = _dbContext.Layouts
+            var filling = _dbContext.Layouts
                 .AsNoTracking()
                 .Where(l => l.Product != null)
                 .Count();
 
-            return occupied;
+            return Task.FromResult(filling);
         }
 
     }

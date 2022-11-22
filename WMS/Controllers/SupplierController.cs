@@ -21,57 +21,57 @@ namespace WMS.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult AddSupplier([FromBody] AddSupplierDto dto)
+        public async Task<ActionResult> AddSupplierAsync([FromBody] AddSupplierDto dto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var id = _supplierService.AddSupplier(dto, loggedUserId);
+            var id = await _supplierService.AddSupplierAsync(dto, loggedUserId);
 
             return Created($"/api/customer/{id}", null);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult Update([FromBody] UpdateSupplierDto dto, [FromRoute] int id)
+        public async Task<ActionResult> UpdateAsync([FromBody] UpdateSupplierDto dto, [FromRoute] int id)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _supplierService.Update(dto, id, loggedUserId);
+            var result = await _supplierService.UpdateAsync(dto, id, loggedUserId);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult Delete([FromRoute] int id)
+        public async Task<ActionResult> DeleteAsync([FromRoute] int id)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _supplierService.Delete(id, loggedUserId);
+            var result = await _supplierService.DeleteAsync(id, loggedUserId);
 
-            return NoContent();
+            return NoContent(result);
         }
         [HttpGet]
         [Authorize(Roles = "admin, manager")]
-        public ActionResult GetAll([FromQuery] SupplierQuery query)
+        public async Task<ActionResult> GetAllAsync([FromQuery] SupplierQuery query)
         {
-            var supplierDtos = _supplierService.GetAll(query);
+            var supplierDtos = await _supplierService.GetAllAsync(query);
 
             return Ok(supplierDtos);
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetById([FromRoute] int id)
+        public async Task<ActionResult> GetByIdAsync([FromRoute] int id)
         {
-            var customer = _supplierService.GetById(id);
+            var customer = await _supplierService.GetByIdAsync(id);
 
             return Ok(customer);
         }
 
         [HttpGet("{id}/products")]
-        public ActionResult GetSupplierProducts([FromRoute] int id)
+        public async Task<ActionResult> GetSupplierProductsAsync([FromRoute] int id)
         {
-            var supplierProductsDto = _supplierService.GetSupplierProducts(id);
+            var supplierProductsDto = await _supplierService.GetSupplierProductsAsync(id);
 
             return Ok(supplierProductsDto);
         }

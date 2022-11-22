@@ -9,7 +9,7 @@ namespace WMS.Helpers
 {
     public interface IJournalHelper
     {
-        void CreateJournal(OperationTypeEnum type, string operationTarget, int operationId, string userId);
+        Task<bool> CreateJournalAsync(OperationTypeEnum type, string operationTarget, int operationId, string userId);
     }
 
     public class JournalHelper : IJournalHelper
@@ -22,7 +22,7 @@ namespace WMS.Helpers
             _dbContext = dbContext;
         }
 
-        public void CreateJournal(OperationTypeEnum type, string operationTarget,  int operationId, string userId)
+        public async Task<bool> CreateJournalAsync(OperationTypeEnum type, string operationTarget,  int operationId, string userId)
         {
 
             var journal = new Journal()
@@ -34,8 +34,14 @@ namespace WMS.Helpers
                 UserId = userId != null ? userId : string.Empty
             };
 
-            _dbContext.Add(journal);
-            _dbContext.SaveChanges();
+            await _dbContext.AddAsync(journal);
+            var isCreated = await _dbContext.SaveChangesAsync();
+            var result  = isCreated > 0 ? true : false;
+
+            if (!result)
+                throw new InternalServerErrorException("journal not created");
+
+            return result;
         }
 
     }
