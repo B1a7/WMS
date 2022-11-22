@@ -4,6 +4,7 @@ namespace WMS.Models.Dtos.ProductDtos
 {
     public class UpdateProductDto
     {
+        public int Id { get; }
         public string Name { get; set; }
         public int Quantity { get; set; }
 

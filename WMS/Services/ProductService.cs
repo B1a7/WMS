@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using WMS.Enums;
@@ -63,7 +64,9 @@ namespace WMS.Services
         public void Update(int id, UpdateProductDto dto, string loggedUserId)
         {
 
-            var product = _productHelper.GetProduct(id);
+            var product = _dbContext.Products
+                .Include(p => p.Categories)
+                .FirstOrDefault(p => p.Id == id);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
@@ -73,14 +76,17 @@ namespace WMS.Services
 
             _productHelper.AddCategory(dto.CategoryName, dto.HSCode, product);
 
-            _dbContext.SaveChanges();
             _journalHelper.CreateJournal(OperationTypeEnum.Update, product.GetType().Name.ToString(), product.Id, loggedUserId);
 
         }
 
         public ProductDto ChangeStatus(int id, string newPackageStatus, string loggedUserId)
         {
-            var product = _productHelper.GetProduct(id);
+            var product = _dbContext.Products
+                .AsNoTracking()
+                .Include(p => p.Statuses)
+                .Include(p => p.Layout)
+                .FirstOrDefault(p => p.Id == id);
 
             if (product is null)
                 throw new NotFoundException($"Product with id {id} not found");
@@ -117,14 +123,18 @@ namespace WMS.Services
         {
             _logger.LogError($"Product with id: {id} DELETE action invoked");
 
-            var product = _dbContext.Products
-                .FirstOrDefault(p => p.Id == id);
+            Product product = new Product()
+            {
+                Id = id
+            };
 
-            if (product is null)
+            _dbContext.Entry(product).State = EntityState.Deleted;
+
+            var result = _dbContext.SaveChanges();
+
+            if (result == 0)
                 throw new NotFoundException("Product not found");
 
-            _dbContext.Products.Remove(product);
-            _dbContext.SaveChanges();
             _journalHelper.CreateJournal(OperationTypeEnum.Delete, product.GetType().Name.ToString(), product.Id, loggedUserId);
 
         }
@@ -133,6 +143,7 @@ namespace WMS.Services
         {
             var baseQuery = _dbContext
                 .Products
+                .AsNoTracking()
                 .Include(p => p.Supplier)
                 .Include(p => p.Categories)
                 .Include(p => p.Statuses)
@@ -174,30 +185,48 @@ namespace WMS.Services
 
         public ProductDto GetById(int id)
         {
-            var product = _productHelper.GetProduct(id);
+
+            var product = _dbContext
+                .Products
+                .AsNoTracking()
+                .Include(p => p.Supplier)
+                .Include(p => p.Categories)
+                .Include(p => p.Statuses)
+                .Include(p => p.Layout)
+                .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefault(p => p.Id == id);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
 
-            var result = _mapper.Map<ProductDto>(product);
-            return result;
+            return product;
         }
 
         public ProductDetailDto GetFullDetailsById(int id)
         {
-            var product = _productHelper.GetProduct(id);
+
+            var product = _dbContext
+                .Products
+                .AsNoTracking()
+                .Include(p => p.Supplier)
+                .Include(p => p.Categories)
+                .Include(p => p.Statuses)
+                .Include(p => p.Layout)
+                .ProjectTo<ProductDetailDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefault(p => p.Id == id);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
 
-            var result = _mapper.Map<ProductDetailDto>(product);
-
-            return result;
+            return product;
         }
 
         public string GetPlacement(int id)
         {
-            var productPlacement = _productHelper.GetProduct(id)
+            var productPlacement = _dbContext.Products
+                .AsNoTracking()
+                .Include(p => p.Layout)
+                .FirstOrDefault(p => p.Id == id)
                 .Layout.PositionXYZ;
 
             if (productPlacement is null)
@@ -208,20 +237,13 @@ namespace WMS.Services
 
         public List<ProductStatusDto> GetProductHistory(int id)
         {
-            var statuses = _productHelper.GetProduct(id)
-                           .Statuses;
+            var statuses = _dbContext.Products
+                .AsNoTracking()
+                .Include(p => p.Statuses)
+                .FirstOrDefault(p => p.Id == id)
+                .Statuses;
 
-            List<ProductStatusDto> result = new List<ProductStatusDto>(); 
-            
-            foreach (var status in statuses)
-            {
-                result.Add(new ProductStatusDto()
-                {
-                    DateStatus = status.DateStatus,
-                    PackageStatus = status.PackageStatus,
-                    IsActive = status.IsActive
-                });
-            }
+            var result = _mapper.Map<List<ProductStatusDto>>(statuses);
 
             return result;
         }

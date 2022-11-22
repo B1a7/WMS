@@ -47,11 +47,11 @@ namespace WMS
                 .ForMember(m => m.Country, c => c.MapFrom(e => e.Address.Country))
                 .ForMember(m => m.PostalCode, c => c.MapFrom(e => e.Address.PostalCode));
 
-            CreateMap<Supplier, UpdateSupplierDto>()
-                .ForMember(m => m.City, c => c.MapFrom(e => e.Address.City))
-                .ForMember(m => m.Street, c => c.MapFrom(e => e.Address.Street))
-                .ForMember(m => m.Country, c => c.MapFrom(e => e.Address.Country))
-                .ForMember(m => m.PostalCode, c => c.MapFrom(e => e.Address.PostalCode));
+            CreateMap<UpdateSupplierDto, Supplier>()
+                .ForMember(m => m.Address.City, c => c.MapFrom(e => e.City))
+                .ForMember(m => m.Address.Street, c => c.MapFrom(e => e.Street))
+                .ForMember(m => m.Address.Country, c => c.MapFrom(e => e.Country))
+                .ForMember(m => m.Address.PostalCode, c => c.MapFrom(e => e.PostalCode));
 
             CreateMap<AddSupplierDto, Supplier>()
                 .ForMember(s => s.Address, c => c.MapFrom(dto => new Address()
@@ -61,6 +61,8 @@ namespace WMS
                 .ForMember(m => m.DateStatus, c => c.MapFrom(e => e.Statuses.FirstOrDefault(x => x.IsActive).DateStatus))
                 .ForMember(m => m.PackageStatus, c => c.MapFrom(e => e.Statuses.FirstOrDefault(x => x.IsActive).PackageStatus))
                 .ForMember(m => m.Position, c => c.MapFrom(e => e.Layout.PositionXYZ));
+
+            CreateMap<Status, ProductStatusDto>();
 
         }
     }

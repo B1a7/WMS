@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using WMS.Enums;
@@ -59,15 +60,10 @@ namespace WMS.Services
             if (supplier is null)
                 throw new NotFoundException("Supplier not found");
 
-            supplier.Name = dto.Name;
-            supplier.Email = dto.Email;
-            supplier.PhoneNumber = dto.PhoneNumber;
-            supplier.Address.City = dto.City;
-            supplier.Address.Street = dto.Street;
-            supplier.Address.Country = dto.Country;
-            supplier.Address.PostalCode = dto.PostalCode;
+            var updatedSupllier = _mapper.Map<Supplier>(dto);
 
-            _dbContext.SaveChanges();
+            _dbContext.Update(updatedSupllier);
+
             _journalHepler.CreateJournal(OperationTypeEnum.Update, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
 
         }
@@ -76,14 +72,20 @@ namespace WMS.Services
         {
             _logger.LogError($"Supplier with id: {id} DELETE action invoked");
 
-            var supplier = _dbContext.Suppliers
-                .FirstOrDefault(s => s.Id == id);
 
-            if (supplier is null)
+            Supplier supplier = new Supplier()
+            {
+                Id = id,
+            };
+
+            _dbContext.Entry(supplier).State = EntityState.Deleted;
+
+            var result = _dbContext.SaveChanges();
+
+
+            if (result == 0)
                 throw new NotFoundException("Supplier not found");
 
-            _dbContext.Suppliers.Remove(supplier);
-            _dbContext.SaveChanges();
             _journalHepler.CreateJournal(OperationTypeEnum.Delete, supplier.GetType().Name.ToString(), supplier.Id, loggedUserId);
 
         }
@@ -91,6 +93,7 @@ namespace WMS.Services
         public PagedResult<SupplierDto> GetAll(SupplierQuery query)
         {
             var baseQuery = _dbContext.Suppliers
+                .AsNoTracking()
                 .Include(s => s.Products)
                 .Include(s => s.Address)
                 .Where(s => query.SearchPhrase == null || (s.Name.ToLower().Contains(query.SearchPhrase.ToLower())
@@ -130,6 +133,7 @@ namespace WMS.Services
         public SupplierDetailDto GetById(int id)
         {
             var supplier = _dbContext.Suppliers
+                .AsNoTracking()
                 .Include(s => s.Address)
                 .FirstOrDefault(s => s.Id == id);
 
@@ -144,17 +148,21 @@ namespace WMS.Services
         public List<SupplierProductDto> GetSupplierProducts(int id)
         {
             var supplier = _dbContext.Suppliers
-                .Include(s => s.Products)      
-                .FirstOrDefault(s => s.Id == id);
+                .AsNoTracking()
+                .Include(s => s.Products) 
+                .Select(s => s.Id)
+                .FirstOrDefault(id);
 
-            if (supplier is null)
+            if (supplier == null)
                 throw new NotFoundException("Supplier not found");
 
             var ProductList = _dbContext.Products
+                .AsNoTracking()
                 .Include(p => p.Categories)
                 .Include(p => p.Layout)
                 .Include(p => p.Statuses)
                 .Where(p => p.Supplier.Id == id)
+                .ProjectTo<SupplierProductDto>(_mapper.ConfigurationProvider)
                 .ToList();
 
             var result = _mapper.Map<List<SupplierProductDto>>(ProductList);

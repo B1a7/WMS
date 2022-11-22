@@ -2,6 +2,7 @@
 {
     public class ProductDto
     {
+        public int Id { get; }
         public string Name { get; set; }
         public int Quantity { get; set; }
         public DateTime ProductionDate { get; set; }

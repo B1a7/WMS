@@ -30,6 +30,7 @@ namespace WMS.Services
         private readonly AuthenticationSettings _authenticationSettings;
         private readonly IJournalHelper _journalHelper;
 
+
         public AccountService(WMSDbContext dbContext, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings,
             IJournalHelper journalHelper)
         {
@@ -38,6 +39,8 @@ namespace WMS.Services
             _authenticationSettings = authenticationSettings;
             _journalHelper = journalHelper;
         }
+      
+        
         public void RegisterUser(RegisterUserDto dto, string loggedUserId)
         {
             var newUser = new User()
@@ -53,6 +56,7 @@ namespace WMS.Services
 
             _dbContext.Users.Add(newUser);
             _dbContext.SaveChanges();
+
             _journalHelper.CreateJournal(OperationTypeEnum.Register, newUser.GetType().Name.ToString(), newUser.Id, loggedUserId);
         }
 
@@ -94,7 +98,8 @@ namespace WMS.Services
 
             var userRoleId = (int)(UserRoleEnum)Enum.Parse(typeof(DocumentTypesEnum), newRole.Role.ToLower());
 
-            var user = _dbContext.Users.First(x => x.Id == id);
+            var user = _dbContext.Users
+                .First(x => x.Id == id);
         
             user.RoleId = userRoleId;
 
@@ -105,14 +110,19 @@ namespace WMS.Services
 
         public void DeleteUser(int id, string loggedUserId)
         {
-            var user = _dbContext.Users.FirstOrDefault(x => x.Id == id);
-            if (user == null)
-                return ;
+            User user = new User()
+            {
+                Id = id
+            };
 
-            _dbContext.Users.Remove(user);
+            _dbContext.Entry(user).State = EntityState.Deleted;
+
             _journalHelper.CreateJournal(OperationTypeEnum.Delete, user.GetType().Name.ToString(), user.Id, loggedUserId);
-            _dbContext.SaveChanges();
 
+            var result = _dbContext.SaveChanges();
+
+            if (result == 0)
+                throw new NotFoundException("User not found");
 
         }
     }

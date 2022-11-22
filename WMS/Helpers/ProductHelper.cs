@@ -7,7 +7,6 @@ namespace WMS.Helpers
 {
     public interface IProductHelper
     {
-        Product GetProduct(int id);
         void AddCategory(string categoryName, string hsCode, Product product);
     }
 
@@ -20,19 +19,6 @@ namespace WMS.Helpers
             _dbContext = dbContext;
         }
 
-
-        public Product GetProduct(int id)
-        {
-            var product = _dbContext
-                .Products
-                .Include(p => p.Supplier)
-                .Include(p => p.Categories)
-                .Include(p => p.Statuses)
-                .Include(p => p.Layout)
-                .FirstOrDefault(p => p.Id == id);
-
-            return product;
-        }
 
         public void AddCategory(string categoryName, string hsCode, Product product)
         {

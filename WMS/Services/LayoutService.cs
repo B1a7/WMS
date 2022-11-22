@@ -20,11 +20,13 @@ namespace WMS.Services
 
     }
 
+
     public class LayoutService : ILayoutService
     {
         private readonly WMSDbContext _dbContext;
         private readonly ILogger<ProductService> _logger;
         private readonly IMapper _mapper;
+
 
         public LayoutService(WMSDbContext dbContext, ILogger<ProductService> logger, IMapper mapper)
         {
@@ -36,7 +38,9 @@ namespace WMS.Services
 
         public int GetCapacity()
         {
-            var capacity = _dbContext.Layouts.Count();
+            var capacity = _dbContext.Layouts
+                .AsNoTracking()
+                .Count();
 
             return capacity;
         }
@@ -47,6 +51,7 @@ namespace WMS.Services
                 throw new BadRequestException($"Wrong size name pick one of {SpotSize.SpotSizes.ToList()}");
 
             var capacity = _dbContext.Layouts
+                .AsNoTracking()
                 .Where(l => l.SpotSize == size)
                 .Count();
 
@@ -55,7 +60,9 @@ namespace WMS.Services
 
         public Dictionary<int, Coordinates> GetMap()
         {
-            var map = _dbContext.Layouts.ToList();
+            var map = _dbContext.Layouts
+                .AsNoTracking()
+                .ToList();
 
             var result = new Dictionary<int, Coordinates>();
 
@@ -70,6 +77,7 @@ namespace WMS.Services
         public ProductDto GetPlacementProduct(int layoutId)
         {
             var product = _dbContext.Layouts
+                .AsNoTracking()
                 .Where(l => l.Id == layoutId)
                 .Include(l => l.Product)
                 .Select(l => l.Product)
@@ -87,6 +95,7 @@ namespace WMS.Services
                 throw new BadRequestException("Wrong size name");
 
             var filling = _dbContext.Layouts
+                .AsNoTracking()
                 .Where(l => l.SpotSize == size && l.Product != null)
                 .Count();
 
@@ -96,6 +105,7 @@ namespace WMS.Services
         public int GetWarehouseFilling()
         {
             var occupied = _dbContext.Layouts
+                .AsNoTracking()
                 .Where(l => l.Product != null)
                 .Count();
 
