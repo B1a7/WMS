@@ -31,20 +31,6 @@ namespace WMS.Models
 
                 #endregion
 
-                #region Users
-
-                var admin = new User()
-                {
-                    Email = "admin@admin.com",
-                    FirstName = "admin",
-                    LastName = "admin",
-                    PasswordHash = "admin",
-                    RoleId = 3,                
-                };
-
-                _dbContext.Add(admin);
-                
-                #endregion
 
                 #region Addresses
 

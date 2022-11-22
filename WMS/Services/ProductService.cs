@@ -74,11 +74,11 @@ namespace WMS.Services
             product.Name = dto.Name;
             product.Quantity = dto.Quantity;
 
-            _productHelper.AddCategory(dto.CategoryName, dto.HSCode, product);
+            await _productHelper.AddCategoryAsync(dto.CategoryName, dto.HSCode, product);
 
-            await _journalHelper.CreateJournalAsync(OperationTypeEnum.Update, product.GetType().Name.ToString(), product.Id, loggedUserId);
+            var result  = await _journalHelper.CreateJournalAsync(OperationTypeEnum.Update, product.GetType().Name.ToString(), product.Id, loggedUserId);
 
-            return true;
+            return result;
 
         }
 

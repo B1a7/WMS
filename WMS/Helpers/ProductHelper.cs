@@ -22,6 +22,8 @@ namespace WMS.Helpers
 
         public async Task AddCategoryAsync(string categoryName, string hsCode, Product product)
         {
+            product.Categories = new List<Category>();
+         
             if (!_dbContext.Categories.Any(c => c.Name.ToLower() == categoryName.ToLower()))
             {
                 var newCategory = new Category()

@@ -12,7 +12,7 @@ namespace WMS.Helpers
 {
     public interface IPdfGenerator
     {
-        Task<(byte[], string, string)> GetDocumentationAsync (EntityBase entity, DocumentTypesEnum docEnum);
+        (byte[], string, string) GetDocumentation (EntityBase entity, DocumentTypesEnum docEnum);
     }
 
     public class PdfGenerator : IPdfGenerator
@@ -26,7 +26,7 @@ namespace WMS.Helpers
             _qRHelper = qRHelper;
         }
 
-        private Task<(byte[], string, string)> GeneratePdfAsync(string fileName, string filePath, string content)
+        private (byte[], string, string) GeneratePdf(string fileName, string filePath, string content)
         {
             var htmlLines = new ChromePdfRenderer();
 
@@ -38,11 +38,11 @@ namespace WMS.Helpers
 
             var fileContent = File.ReadAllBytes(filePath);
 
-            return Task.FromResult((fileContent, contentType, fileName));
+            return (fileContent, contentType, fileName);
         }
 
 
-        public async Task<(byte[], string, string)> GetDocumentationAsync(EntityBase entity, DocumentTypesEnum docEnum)
+        public (byte[], string, string) GetDocumentation(EntityBase entity, DocumentTypesEnum docEnum)
         {
             var fileName = $"{entity.GetFileName(docEnum)}.pdf";
             var filePath = $"{rootPath}/Documentation/{fileName}";
@@ -54,7 +54,7 @@ namespace WMS.Helpers
             //Generate HTML to convert it to the PDF
             var content = entity.GenerateHTML(docEnum);
 
-            var result = await GeneratePdfAsync(fileName, filePath, content);
+            var result = GeneratePdf(fileName, filePath, content);
 
             return result;
         }

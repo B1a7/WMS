@@ -27,7 +27,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("detailCapacity")]
-        public async Task<ActionResult> GetWarehouseDetailCapacityAsync([FromBody] string size)
+        public async Task<ActionResult> GetWarehouseDetailCapacityAsync([FromQuery] string size)
         {
             var detailCapacity = await _layoutService.GetDetailCapacityAsync(size);
 
@@ -43,17 +43,17 @@ namespace WMS.Controllers
         }
 
         [HttpGet("detailFilling")]
-        public async Task<ActionResult> GetWarehouseDetailFillingAsync([FromBody] string size)
+        public async Task<ActionResult> GetWarehouseDetailFillingAsync([FromQuery] string size)
         {
             var detailfilling = await _layoutService.GetWarehouseDetailFillingAsync(size);
 
             return Ok(detailfilling);
         }
 
-        [HttpGet("product/{id}/placement")]
-        public async Task<ActionResult> GetPlacementProductAsync([FromRoute] int layoutId)
+        [HttpGet("placement/{id}/product")]
+        public async Task<ActionResult> GetPlacementProductAsync([FromRoute] int id)
         {
-            var product = await _layoutService.GetPlacementProductAsync(layoutId);
+            var product = await _layoutService.GetPlacementProductAsync(id);
 
             return Ok(product);
         }

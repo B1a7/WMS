@@ -54,7 +54,7 @@ namespace WMS.Services
                 .AsNoTracking()
                 .Where(l => l.SpotSize == size)
                 .Count();
-
+            
             return Task.FromResult(capacity);
         }
 

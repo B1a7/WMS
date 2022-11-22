@@ -19,23 +19,23 @@ namespace WMS.Controllers
 
 
         [HttpPost("register")]
-        public ActionResult RegisterUser([FromBody] RegisterUserDto dto)
+        public async Task<ActionResult> RegisterUserAsync([FromBody] RegisterUserDto dto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _accountService.RegisterUser(dto, loggedUserId);
-            return Ok();
+            var result = await _accountService.RegisterUserAsync(dto, loggedUserId);
+            return Ok(result);
         }
 
         [HttpPut("user/{id}")]
         [Authorize(Roles = "admin")]
-        public ActionResult ChangeUserRole([FromRoute] int id, [FromBody]UserRoleDto dto)
+        public async Task<ActionResult> ChangeUserRoleAsync([FromRoute] int id, [FromBody]UserRoleDto dto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _accountService.ChangeUserRole(id, dto, loggedUserId);
+            var result = await _accountService.ChangeUserRoleAsync(id, dto, loggedUserId);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPost("login")]
@@ -47,13 +47,13 @@ namespace WMS.Controllers
 
 
         [HttpDelete("user/{id}")]
-        public ActionResult DeleteUser([FromRoute] int id)
+        public async Task<ActionResult> DeleteUserAsync([FromRoute] int id)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _accountService.DeleteUser(id, loggedUserId);
+            var result = await _accountService.DeleteUserAsync(id, loggedUserId);
 
-            return NoContent();
+            return Ok(result);
         }
     }
 

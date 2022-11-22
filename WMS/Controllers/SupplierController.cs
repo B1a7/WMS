@@ -49,7 +49,7 @@ namespace WMS.Controllers
 
             var result = await _supplierService.DeleteAsync(id, loggedUserId);
 
-            return NoContent(result);
+            return Ok(result);
         }
         [HttpGet]
         [Authorize(Roles = "admin, manager")]

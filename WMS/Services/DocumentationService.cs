@@ -72,7 +72,7 @@ namespace WMS.Services
                 
             }    
             else
-                throw new BadImageFormatException();
+                throw new  BadImageFormatException("Wrong image format");
 
             
         }

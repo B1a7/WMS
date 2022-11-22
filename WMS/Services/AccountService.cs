@@ -16,10 +16,10 @@ namespace WMS.Services
 {
     public interface IAccountService
     {
-        void RegisterUser(RegisterUserDto dto, string loggedUserId);
+        Task<bool> RegisterUserAsync(RegisterUserDto dto, string loggedUserId);
         string GenerateJwt(LoginDto dto);
-        void ChangeUserRole(int id, UserRoleDto newRole, string loggedUserId);
-        void DeleteUser(int id, string loggedUserId);
+        Task<bool> ChangeUserRoleAsync(int id, UserRoleDto newRole, string loggedUserId);
+        Task<bool> DeleteUserAsync(int id, string loggedUserId);
     }
 
 
@@ -41,13 +41,14 @@ namespace WMS.Services
         }
       
         
-        public void RegisterUser(RegisterUserDto dto, string loggedUserId)
+        public async Task<bool> RegisterUserAsync(RegisterUserDto dto, string loggedUserId)
         {
             var newUser = new User()
             {
                 Email = dto.Email,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
+                RoleId = dto.RoleId
             };
 
             var hashedPassword = _passwordHasher.HashPassword(newUser, dto.Password);
@@ -55,9 +56,11 @@ namespace WMS.Services
 
 
             _dbContext.Users.Add(newUser);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
-            _journalHelper.CreateJournalAsync(OperationTypeEnum.Register, newUser.GetType().Name.ToString(), newUser.Id, loggedUserId);
+            var result = await _journalHelper.CreateJournalAsync(OperationTypeEnum.Register, newUser.GetType().Name.ToString(), newUser.Id, loggedUserId);
+
+            return true;
         }
 
         public string GenerateJwt(LoginDto dto)
@@ -93,7 +96,7 @@ namespace WMS.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public void ChangeUserRole(int id, UserRoleDto newRole, string loggedUserId)
+        public  Task<bool> ChangeUserRoleAsync(int id, UserRoleDto newRole, string loggedUserId)
         {
 
             var userRoleId = (int)(UserRoleEnum)Enum.Parse(typeof(DocumentTypesEnum), newRole.Role.ToLower());
@@ -103,12 +106,12 @@ namespace WMS.Services
         
             user.RoleId = userRoleId;
 
-            _journalHelper.CreateJournal(OperationTypeEnum.Add, user.GetType().Name.ToString(), user.Id, loggedUserId);
-            _dbContext.SaveChanges();
+            var result =  _journalHelper.CreateJournalAsync(OperationTypeEnum.Add, user.GetType().Name.ToString(), user.Id, loggedUserId);
 
+            return result;
         }
 
-        public void DeleteUser(int id, string loggedUserId)
+        public Task<bool> DeleteUserAsync(int id, string loggedUserId)
         {
             User user = new User()
             {
@@ -117,13 +120,9 @@ namespace WMS.Services
 
             _dbContext.Entry(user).State = EntityState.Deleted;
 
-            _journalHelper.CreateJournal(OperationTypeEnum.Delete, user.GetType().Name.ToString(), user.Id, loggedUserId);
+            var result = _journalHelper.CreateJournalAsync(OperationTypeEnum.Delete, user.GetType().Name.ToString(), user.Id, loggedUserId);
 
-            var result = _dbContext.SaveChanges();
-
-            if (result == 0)
-                throw new NotFoundException("User not found");
-
+            return result;
         }
     }
 }
