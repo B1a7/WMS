@@ -6,7 +6,7 @@ using WMS.Services;
 
 namespace WMS.Controllers
 {
-    [Route("api/customer")]
+    [Route("api/supplier")]
     [ApiController]
     [Authorize]
     public class SupplierController : ControllerBase

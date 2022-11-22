@@ -98,14 +98,12 @@ namespace WMS.Services
 
             if (newPackageStatusEnum == null)
                 throw new BadRequestException($"Status can be only :{PackageStatus.PackageStatuses.ToString()}");
-           
+                                
+            await _productPlacementHelper.ModifyProductPlacementAsync(product, newPackageStatusEnum);
+
             if (product.Statuses != null)
                 product.Statuses.ForEach(s => s.IsActive = false);
-                      
-            var isPlacementChanged = await _productPlacementHelper.ModifyProductPlacementAsync(product, newPackageStatusEnum);
 
-            if (!isPlacementChanged)
-                throw new InternalServerErrorException("Cannot change product placement");
 
             var newStatus = new Status()
             {
@@ -220,13 +218,14 @@ namespace WMS.Services
                 .Include(p => p.Categories)
                 .Include(p => p.Statuses)
                 .Include(p => p.Layout)
-                .ProjectTo<ProductDetailDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefault(p => p.Id == id);
+
+            var result = _mapper.Map<ProductDetailDto>(product);
 
             if (product is null)
                 throw new NotFoundException("Product not found");
 
-            return Task.FromResult(product);
+            return Task.FromResult(result);
         }
 
         public Task<string> GetPlacementAsync(int id)

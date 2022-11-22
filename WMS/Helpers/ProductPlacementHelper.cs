@@ -30,6 +30,7 @@ namespace WMS.Helpers
                 throw new NoEmptySpotException("Cannot add product to the warehouse (no empty spot)");
             
             product.Layout = emptySpots;
+            _dbContext.Update(product);
             int result = await _dbContext.SaveChangesAsync();
 
             return result > 0 ? true : false;
@@ -39,6 +40,7 @@ namespace WMS.Helpers
         {
             product.LayoutId = null;
 
+            _dbContext.Update(product);
             int result = await _dbContext.SaveChangesAsync();
 
             return result > 0 ? true : false;
@@ -49,18 +51,25 @@ namespace WMS.Helpers
         {
             var currentStatus = product.Statuses
                 .FirstOrDefault(s => s.IsActive == true);
-            bool result;
 
-            if (currentStatus.PackageStatus == PackageStatus.PlacedInWarehouse
-                    && newPackageStatus == PackageStatus.PlacedInWarehouse)
-                return true;
+            bool result = false;
 
-            else if (newPackageStatus == PackageStatus.PlacedInWarehouse)
-                result = await AddToWarehouseAsync(product);
-            else
-                result = await RemoveFromWarehouseAsync(product);
+            if (currentStatus != null)
+            {
+                if (currentStatus.PackageStatus == PackageStatus.PlacedInWarehouse
+                        && newPackageStatus == PackageStatus.PlacedInWarehouse)
+                    result =  true;
 
-            return false;
+                else if (newPackageStatus == PackageStatus.PlacedInWarehouse)
+                    result =  await AddToWarehouseAsync(product);
+                else
+                    result =  await RemoveFromWarehouseAsync(product);
+            }
+
+            if (!result)
+                throw new InternalServerErrorException("Cannot change product placement");
+
+            return result;
         }
 
     }

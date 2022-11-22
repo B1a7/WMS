@@ -23,7 +23,7 @@ namespace WMS.Models.Validators.SupplierValidator
                 .NotEmpty().WithMessage("{PropertyName} cannot be empty")
                 .MinimumLength(9).WithMessage("PhoneNumber must not be less than 9 characters.")
                 .MaximumLength(20).WithMessage("PhoneNumber must not exceed 9 characters.")
-                .Matches(new Regex(@"/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})/"))
+                .Matches(new Regex(@"\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})"))
                 .WithMessage("PhoneNumber not valid format");
 
             RuleFor(x => x.City)

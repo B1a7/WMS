@@ -145,14 +145,13 @@ namespace WMS.Services
         {
             var supplier = _dbContext.Suppliers
                 .AsNoTracking()
-                .Include(s => s.Products) 
-                .Select(s => s.Id)
-                .FirstOrDefault(id);
+                .Include(s => s.Products)
+                .Select(s => s.Id);
 
-            if (supplier == null)
+            if (!supplier.Contains(id))
                 throw new NotFoundException("Supplier not found");
 
-            var ProductList = _dbContext.Products
+            var productList = _dbContext.Products
                 .AsNoTracking()
                 .Include(p => p.Categories)
                 .Include(p => p.Layout)
@@ -160,10 +159,8 @@ namespace WMS.Services
                 .Where(p => p.Supplier.Id == id)
                 .ProjectTo<SupplierProductDto>(_mapper.ConfigurationProvider)
                 .ToList();
-
-            var result = _mapper.Map<List<SupplierProductDto>>(ProductList);
             
-            return Task.FromResult(result);
+            return Task.FromResult(productList);
 
         }
     }

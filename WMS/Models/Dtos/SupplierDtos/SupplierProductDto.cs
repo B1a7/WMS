@@ -2,7 +2,7 @@
 {
     public class SupplierProductDto
     {
-        public int Id { get; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public int Quantity { get; set; }
         public DateTime ProductionDate { get; set; }

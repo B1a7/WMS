@@ -112,7 +112,7 @@ namespace WMS.Models
                     {
                         statusInactiveGenerator.Generate(),
                         statusInactiveGenerator.Generate(),
-                        statusActiveGenerator.Generate()
+                        statusActiveGenerator.Generate(),
                     });
 
                 #endregion

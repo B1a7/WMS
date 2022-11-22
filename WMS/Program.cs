@@ -122,9 +122,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 //DATA GENERATOR
-//var scope = app.Services.CreateScope();
-//var generator = scope.ServiceProvider.GetRequiredService<Seeder>();
-//generator.GenerateData();
+var scope = app.Services.CreateScope();
+var generator = scope.ServiceProvider.GetRequiredService<Seeder>();
+generator.GenerateData();
 
 
 app.UseStaticFiles();
