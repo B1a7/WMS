@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using WMS.IntegrationTests.Heplers;
+using WMS.IntegrationTests.Helpers;
 using WMS.Models;
 using WMS.Models.Dtos.AccountDtos;
 using WMS.Services;
@@ -99,7 +99,7 @@ namespace WMS.IntegrationTests.Controllers
             };
 
             _accountServiceMock
-                .Setup(e => e.GenerateJwt(It.IsAny<LoginDto>()))
+                .Setup(e => e.GenerateJwt(registeredLoginDto))
                 .Returns("jwt");
 
             var wrongLoginDto = new LoginDto()
@@ -115,7 +115,7 @@ namespace WMS.IntegrationTests.Controllers
             var response = await _client.PostAsync("api/account/login", httpContent);
 
             //assert
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
 
         }
 
