@@ -27,11 +27,17 @@ namespace WMS.IntegrationTests.ValidatorsTests.AccountValidatorTests
             {
                 new User()
                 {
-                    Email = "test2@test.com"
+                    Email = "test2@test.com",
+                    FirstName = "test",
+                    LastName = "test",
+                    PasswordHash = "test"
                 },
                  new User()
                 {
-                    Email = "test3@test.com"
+                    Email = "test3@test.com",
+                    FirstName = "test",
+                    LastName = "test",
+                    PasswordHash = "test"
                 },
             };
 
@@ -50,6 +56,8 @@ namespace WMS.IntegrationTests.ValidatorsTests.AccountValidatorTests
                 Email = "test@test.com",
                 Password = "Password123",
                 ConfirmPassword = "Password123",
+                FirstName = "adam",
+                LastName = "adam"
             };
 
             var validator = new RegisterUserDtoValidator(_dbContext);
@@ -71,7 +79,7 @@ namespace WMS.IntegrationTests.ValidatorsTests.AccountValidatorTests
             {
                 Email = "test2@test.com",
                 Password = "password123",
-                ConfirmPassword = "password123",
+                ConfirmPassword = "password", 
             };
 
             var validator = new RegisterUserDtoValidator(_dbContext);

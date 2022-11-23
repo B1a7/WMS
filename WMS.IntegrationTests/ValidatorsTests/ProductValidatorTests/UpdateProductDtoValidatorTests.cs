@@ -6,7 +6,7 @@ using WMS.Models.Entities;
 using WMS.Models.Validators.ProductValidator;
 using Xunit;
 
-namespace WMS.IntegrationTests.ValidatorsTests.AccountValidatorTests
+namespace WMS.IntegrationTests.ValidatorsTests.ProductValidatorTests
 {
     public class UpdateProductDtoValidatorTests
     {
