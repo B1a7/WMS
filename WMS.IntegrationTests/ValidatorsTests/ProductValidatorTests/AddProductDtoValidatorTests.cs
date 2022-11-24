@@ -55,7 +55,7 @@ namespace WMS.IntegrationTests.ValidatorsTests.ProductValidatorTests
 
             //act
             var result = validator.TestValidate(model);
-
+            
             //assert
 
             result.ShouldNotHaveAnyValidationErrors();
@@ -66,22 +66,21 @@ namespace WMS.IntegrationTests.ValidatorsTests.ProductValidatorTests
         {
             // arrange
 
-            var model = new AddProductDto()
+            var dto = new AddProductDto()
             {
-                Size = "small",
+                Size = "large",
                 Name = "TesttName",
                 ProductionDate = DateTime.Now,
-                HSCode = "111111111",
+                HSCode = "2111111111",
                 Quantity = 1,
-                CategoryName = "TestCategory",
-                SupplierId = 2,
+                CategoryName = "TesttCategory",
+                SupplierId = 5,
             };
 
             var validator = new AddProductDtoValidator(_dbContext);
 
             //act
-            var result = validator.TestValidate(model);
-
+            var result = validator.TestValidate(dto);
             //assert
 
             result.ShouldHaveAnyValidationError();

@@ -70,15 +70,14 @@ namespace WMS.IntegrationTests.ValidatorsTests.ProductValidatorTests
         }
 
         [Fact]
-        public void Validate_ForInvalidModel_ReturnsSucces()
+        public void Validate_ForInvalidModel_ReturnsFailure()
         {
             // arrange
 
             var model = new UpdateProductDto()
             {
                 Name = "",
-                HSCode = "111111111",
-                Quantity = 1,
+                HSCode = "111111111",             
                 CategoryName = "TestCategory",
             };
 
@@ -86,7 +85,7 @@ namespace WMS.IntegrationTests.ValidatorsTests.ProductValidatorTests
 
             //act
             var result = validator.TestValidate(model);
-
+            model = null
             //assert
 
             result.ShouldHaveAnyValidationError();

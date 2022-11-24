@@ -28,20 +28,20 @@ namespace WMS.IntegrationTests.Startup
             });
         }
 
-        [Fact]
-        public void ConfigureServices_ForControllers_RegistersAllDependencies()
-        {
-            //arrange
-            var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
-            using var scope = scopeFactory.CreateScope();
+        //[Fact]
+        //public void ConfigureServices_ForControllers_RegistersAllDependencies()
+        //{
+        //    //arrange
+        //    var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
+        //    using var scope = scopeFactory.CreateScope();
 
 
-            // assert
-            _controllerTypes.ForEach(t =>
-            {
-                var controller = scope.ServiceProvider.GetService(t);
-                controller.Should().NotBeNull();
-            });
-        }
+        //    // assert
+        //    _controllerTypes.ForEach(t =>
+        //    {
+        //        var controller = scope.ServiceProvider.GetService(t);
+        //        controller.Should().NotBeNull();
+        //    });
+        //}
     }
 }

@@ -39,7 +39,7 @@ namespace WMS.Helpers
             var result  = isCreated > 0 ? true : false;
 
             if (!result)
-                throw new InternalServerErrorException("journal not created");
+                throw new NotFoundException("journal not created");
 
             return result;
         }

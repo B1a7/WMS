@@ -8,7 +8,7 @@ using WMS.Models.Dtos.AccountDtos;
 using WMS.Services;
 using Xunit;
 
-namespace WMS.IntegrationTests.Controllers
+namespace WMS.IntegrationTests.ControllersTests
 {
     public class AccountControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
@@ -71,7 +71,9 @@ namespace WMS.IntegrationTests.Controllers
 
             var registerUser = new RegisterUserDto()
             {
-                Email = "test@test.com",
+                FirstName = "test",
+                LastName = "test",
+                Email = "test1@test.com",
                 Password = "password123",
                 ConfirmPassword = "password123"
             };
