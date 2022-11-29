@@ -21,4 +21,12 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="HelpersTests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WMS\WMS.csproj" />
+  </ItemGroup>
+
 </Project>
