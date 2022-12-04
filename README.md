@@ -1,6 +1,6 @@
 # WMS 
 > Warehouse Management System is my engineer's thesis project built in ASP.NET and React.js.
-> A link will appear here in the nearest future -->
+> A link to the page will appear here in the nearest future (as soon as I deploy project in Azure Cloud) -->
 
 ## Table of Contents
 * [General Info](#general-information)
