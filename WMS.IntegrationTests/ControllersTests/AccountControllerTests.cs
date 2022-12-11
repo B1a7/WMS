@@ -39,7 +39,8 @@ namespace WMS.IntegrationTests.ControllersTests
 
 
         [Fact]
-        public async Task Login_ForRegisteredUser_ReturnsOk()
+        public async Task Login_ForRegisteredUser_
+            ReturnsOk()
         {
             //arrange 
 
